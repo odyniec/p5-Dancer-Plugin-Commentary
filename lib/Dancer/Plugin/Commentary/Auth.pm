@@ -7,4 +7,6 @@ sub init { }
 
 sub authentication_url { }
 
+sub auth_data { }
+
 1;
