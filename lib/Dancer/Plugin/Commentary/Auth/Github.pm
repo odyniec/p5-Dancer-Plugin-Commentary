@@ -41,6 +41,17 @@ sub authentication_url {
                     uri_escape(request->uri_base . request->uri));
 }
 
+sub auth_data {
+    if (session('github_user')) {
+        return {
+            method => 'Github',
+        };
+    }
+    else {
+        return 0;
+    }
+}
+
 # This is the same as Dancer::Plugin::Auth::Github's callback route, except it
 # also supports passing a success callback URL in query string
 get '/commentary/auth/github/callback' => sub {

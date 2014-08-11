@@ -33,6 +33,17 @@ sub authentication_url {
     return $url;
 }
 
+sub auth_data {
+    if (session('twitter_user')) {
+        return {
+            method => 'Twitter',
+        };
+    }
+    else {
+        return 0;
+    }
+}
+
 # This is the same as Dancer::Plugin::Auth::Twitter's callback route, except it
 # also supports passing a success callback URL in query string
 get '/commentary/auth/twitter/callback' => sub {
