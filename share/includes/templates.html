@@ -3,40 +3,40 @@
     <script type="text/x-template" id="commentary-template-comment">
         <div class="commentary-comment-author">
             <img class="commentary-comment-author-avatar"
-                src="[%= comment.author.avatar_url %]" />
+                src="<%= comment.author.avatar_url %>" />
             <strong>
-                [% if (comment.author.url) { %]
-                    <a href="[%= comment.author.url %]">
-                        [%= comment.author.display_name %]
+                <% if (comment.author.url) { %>
+                    <a href="<%= comment.author.url %>">
+                        <%= comment.author.display_name %>
                     </a>
-                [% } else { %]
-                    [%= comment.author.display_name %]
-                [% } %]
+                <% } else { %>
+                    <%= comment.author.display_name %>
+                <% } %>
             </strong>
         </div>
         <p>
-            [%= comment.body %]
+            <%= comment.body %>
         </p>
     </script>
 
     <!-- Authentication -->
     <script type="text/x-template" id="commentary-template-authentication">
-        [% if (user.auth) { %]
-            Authenticated with [%= user.auth.method %]
-        [% } else { %]
-            [% if (auth.methods.length) { %]
+        <% if (user.auth) { %>
+            Authenticated with <%= user.auth.method %>
+        <% } else { %>
+            <% if (auth.methods.length) { %>
                 Authenticate using:
                 <ul>
-                    [% $.each(auth.methods, function (i, method) { %]
+                    <% $.each(auth.methods, function (i, method) { %>
                         <li>
-                            <a href="[%= method.authentication_url %]">
-                                [%= method.name %]
+                            <a href="<%= method.authentication_url %>">
+                                <%= method.name %>
                             </a>
                         </li>
-                    [% }) %]
+                    <% }) %>
                 </ul>
-            [% } %]
-        [% } %]
+            <% } %>
+        <% } %>
     </script>
 
     <!-- New comment form -->
