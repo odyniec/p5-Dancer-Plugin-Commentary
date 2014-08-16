@@ -1,56 +1,107 @@
 <div id="commentary-templates" style="display: none;">
+    <script type="text/x-template" id="commentary-template-head">
+        <link href="//maxcdn.bootstrapcdn.com/font-awesome/4.1.0/css/font-awesome.min.css" rel="stylesheet">
+    </script>
+
     <!-- Comments container -->
     <script type="text/x-template" id="commentary-template-comments">
         <div class="commentary-comments">
+            <div class="commentary-comments-header">
+                <span class="commentary-comments-count">
+                    <%= comments.length || 'No' %>
+                    comment<%= comments.length == 1 ? '' :  's' %>
+                </span>
+            </div>
         </div>
     </script>
 
     <!-- Comment -->
     <script type="text/x-template" id="commentary-template-comment">
-        <div class="commentary-comment-author">
-            <img class="commentary-comment-author-avatar"
-                src="<%= comment.author.avatar_url %>" />
-            <strong>
-                <% if (comment.author.url) { %>
-                    <a href="<%= comment.author.url %>">
+        <div class="commentary-comment">
+            <div class="commentary-comment-author">
+                <img class="commentary-comment-author-avatar"
+                    src="<%= comment.author.avatar_url %>" />
+                <span class="commentary-comment-author-name">
+                    <% if (comment.author.url) { %>
+                        <a href="<%= comment.author.url %>">
+                            <%= comment.author.display_name %>
+                        </a>
+                    <% } else { %>
                         <%= comment.author.display_name %>
-                    </a>
-                <% } else { %>
-                    <%= comment.author.display_name %>
+                    <% } %>
+                </span>
+                <% if (comment.author.auth_method == 'twitter') { %>
+                    <span class="commentary-comment-author-auth-method fa fa-twitter" title="Twitter"></span>
+                <% } else if (comment.author.auth_method == 'github') { %>
+                    <span class="commentary-comment-author-auth-method fa fa-github" title="GitHub"></span>
                 <% } %>
-            </strong>
+            </div>
+            <div class="commentary-comment-date">
+                <span title="<%= comment.date %>">
+                    <%= comment.fuzzy_date %>
+                </span>
+            </div>
+            <div class="commentary-comment-body">
+                <%= comment.body %>
+            </div>
         </div>
-        <p>
-            <%= comment.body %>
-        </p>
     </script>
 
     <!-- Authentication -->
     <script type="text/x-template" id="commentary-template-authentication">
-        <% if (user.auth) { %>
-            Authenticated with <%= user.auth.method %>
-        <% } else { %>
-            <% if (auth.methods.length) { %>
-                Authenticate using:
-                <ul>
-                    <% $.each(auth.methods, function (i, method) { %>
-                        <li>
-                            <a href="<%= method.authentication_url %>">
-                                <%= method.name %>
-                            </a>
-                        </li>
-                    <% }) %>
-                </ul>
+        <div id="commentary-authentication">
+            <% if (user.auth instanceof Object) { %>
+                Signed in with <%= user.auth.method %>
+            <% } else { %>
+                <% if (auth.methods.length) { %>
+                    To add comment, sign in with:
+                    <ul>
+                        <% $.each(auth.methods, function (i, method) { %>
+                            <li>
+                                <a href="<%= method.authentication_url %>">
+                                    <%= method.name %>
+                                </a>
+                            </li>
+                        <% }) %>
+                    </ul>
+                <% } %>
             <% } %>
-        <% } %>
+        </div>
     </script>
 
     <!-- New comment form -->
     <script type="text/x-template" id="commentary-template-new-comment">
         <div id="commentary-new-comment">
-            <input class="commentary-comment-post-url" type="hidden" />
-            <textarea class="commentary-comment-body"></textarea>
-            <button class="commentary-comment-submit">Add Comment</button>
+            <% if (user.auth instanceof Object) { %>
+                <div class="commentary-comment-author">
+                    <img class="commentary-comment-author-avatar"
+                        src="<%= user.avatar_url %>" />
+                    <span class="commentary-comment-author-name">
+                        <% if (user.url) { %>
+                            <a href="<%= user.url %>">
+                                <%= user.display_name %>
+                            </a>
+                        <% } else { %>
+                            <%= user.display_name %>
+                        <% } %>
+                    </span>
+                    <% if (user.auth.method == 'twitter') { %>
+                        <span class="commentary-comment-author-auth-method fa fa-twitter" title="Twitter"></span>
+                    <% } else if (user.auth.method == 'github') { %>
+                        <span class="commentary-comment-author-auth-method fa fa-github" title="GitHub"></span>
+                    <% } %>
+                </div>
+            <% } else { %>
+                <div class="commentary-comment-author">
+                    <span class="fa fa-user"></span>
+                </div>
+            <% } %>
+            <div class="commentary-comment-body">
+                <textarea placeholder="Add comment..."></textarea>
+            </div>
+            <div class="commentary-comment-actions">
+                <button class="commentary-comment-actions-submit">Add Comment</button>
+            </div>
         </div>
     </script>
 </div>
