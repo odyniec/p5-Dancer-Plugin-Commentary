@@ -10,14 +10,18 @@ use URI::Escape;
 use parent 'Dancer::Plugin::Commentary::Auth';
 
 sub init {
+    my ($class, $settings) = @_;
+
     warn 'No Dancer::Plugin::Auth::Twitter settings found'
         if !exists config->{plugins}{'Auth::Twitter'};
 
     auth_twitter_init();
+
+    return $class;
 }
 
 sub authentication_url {
-    my ($callback_url) = @_;
+    my ($class, $callback_url) = @_;
 
     my $url = twitter->get_authentication_url(
         'callback' => request->uri_base .
@@ -34,6 +38,8 @@ sub authentication_url {
 }
 
 sub auth_data {
+    my ($class) = @_;
+
     if (session('twitter_user')) {
         return {
             method => 'Twitter',

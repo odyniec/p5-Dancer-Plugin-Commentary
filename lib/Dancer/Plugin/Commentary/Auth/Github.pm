@@ -18,6 +18,8 @@ my $scope;
 my $state_salt = join '', map { sprintf '%x', rand(16) } 1..20;
 
 sub init {
+    my ($class, $settings) = @_;
+
     warn 'No Dancer::Plugin::Auth::Github settings found'
         if !exists config->{plugins}{'Auth::Github'};
 
@@ -26,10 +28,12 @@ sub init {
     $client_id = config->{plugins}{'Auth::Github'}{client_id};
     $client_secret = config->{plugins}{'Auth::Github'}{client_secret};
     $scope = config->{plugins}{'Auth::Github'}{scope};
+
+    return $class;
 }
 
 sub authentication_url {
-    my ($callback_url) = @_;
+    my ($class, $callback_url) = @_;
 
     my $generate_state = sha256_hex($client_id.$client_secret.$state_salt);
 
@@ -42,6 +46,8 @@ sub authentication_url {
 }
 
 sub auth_data {
+    my ($class) = @_;
+
     if (session('github_user')) {
         return {
             method => 'Github',
