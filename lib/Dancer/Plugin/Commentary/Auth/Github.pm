@@ -12,6 +12,8 @@ use URI::Escape;
 
 use parent 'Dancer::Plugin::Commentary::Auth';
 
+$Dancer::Plugin::Commentary::Auth::methods{github} = __PACKAGE__;
+
 my $client_id;
 my $client_secret;
 my $scope;

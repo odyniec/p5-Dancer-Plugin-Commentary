@@ -9,6 +9,8 @@ use URI::Escape;
 
 use parent 'Dancer::Plugin::Commentary::Auth';
 
+$Dancer::Plugin::Commentary::Auth::methods{twitter} = __PACKAGE__;
+
 sub init {
     my ($class, $settings) = @_;
 
