@@ -8,11 +8,42 @@ use warnings;
 # VERSION
 
 use Dancer ':syntax';
+use Dancer::Plugin;
 use File::ShareDir;
+use HTML::Entities;
+use URI::Escape;
 
-my $dist_dir = '../Dancer-Plugin-Commentary/share';
-# FIXME: File::ShareDir::dist_dir('Dancer-Plugin-Commentary');
+use Dancer::Plugin::Commentary::Auth::Github;
+use Dancer::Plugin::Commentary::Auth::Twitter;
+
+use Dancer::Plugin::Commentary::Storage::Memory;
+
+my $dist_dir = File::ShareDir::dist_dir('Dancer-Plugin-Commentary');
 my $assets_dir = path $dist_dir, 'assets';
+my $includes_dir = path $dist_dir, 'includes';
+
+my $settings = plugin_setting;
+
+sub encode_data;
+sub js_config;
+
+my @auth_methods = ();
+
+# Initialize the configured authentication methods
+while (my ($method, $method_settings) = each %{$settings->{auth}{methods}}) {
+    $method = lc $method;
+    if (exists $Dancer::Plugin::Commentary::Auth::methods{$method}) {
+        push @auth_methods,
+            $Dancer::Plugin::Commentary::Auth::methods{$method}->init(
+                ref($method_settings) eq 'HASH' ? $method_settings : undef
+            );
+    }
+    else {
+        # TODO: No corresponding Auth module found, raise error
+    }
+}
+
+Dancer::Plugin::Commentary::Storage::Memory::init;
 
 hook 'after_file_render' => sub {
     my $response = shift;
@@ -34,14 +65,69 @@ hook 'after_file_render' => sub {
         $content = $response->content;
     }
 
-    # Inject our JavaScript code
-    my $script_tag = '<script type="text/javascript" src="' .
-        request->uri_base . '/commentary/assets/js/commentary.js"></script>';
-    $content =~ s{</body>}{$script_tag</body>}s;
+    if ($content =~ m{</head>}) {
+        if (my $stylesheets = $settings->{stylesheets}) {
+            if (ref($stylesheets) eq 'HASH') {
+                # TODO: Handle conditional stylesheets
+            }
+            else {
+                my $stylesheets_content = join '', map {
+                    qq{<link rel="stylesheet" type="text/css" href="$_" />}
+                } @$stylesheets;
+                $content =~ s{</head>}{$stylesheets_content</head>}s;
+            }
+        }
+    }
+
+    if ($content =~ m{</body>}) {
+        # Inject our JavaScript code
+        my $js = sprintf <<END, to_json(js_config), request->uri_base;
+<script type="text/javascript">var __commentaryCfg = %s;</script>
+<script type="text/javascript" src="%s/commentary/assets/js/commentary.js"></script>
+END
+        $content =~ s{</body>}{$js</body>}s;
+    }
 
     $response->content($content);
 
     return $response;
+};
+
+post '/commentary/comments' => sub {
+    my $author = {};
+
+    # FIXME: Move method-specific stuff to Auth modules
+    if (session('twitter_user')) {
+        $author->{auth_method} = 'twitter';
+        $author->{display_name} = session('twitter_user')->{name};
+        $author->{url} = session('twitter_user')->{url};
+        $author->{avatar_url} = session('twitter_user')->{profile_image_url};
+    }
+    elsif (session('github_user')) {
+        $author->{auth_method} = 'github';
+        $author->{display_name} = session('github_user')->{name};
+        $author->{url} = session('github_user')->{html_url};
+        $author->{avatar_url} = session('github_user')->{avatar_url};
+    }
+
+    my $new_comment = Dancer::Plugin::Commentary::Storage::Memory::add({
+        timestamp   => time,
+        body        => param('body'),
+        post_url    => param('post_url'),
+        author      => $author,
+    });
+
+    return to_json encode_data $new_comment;
+};
+
+get '/commentary/comments/**' => sub {
+    my ($path) = splat;
+
+    my $post_url = join '/', @$path;
+
+    return to_json encode_data Dancer::Plugin::Commentary::Storage::Memory::get({
+        post_url => "/$post_url"
+    });
 };
 
 get '/commentary/assets/**' => sub {
@@ -50,4 +136,87 @@ get '/commentary/assets/**' => sub {
     return send_file(path($assets_dir, @$path), system_path => 1);
 };
 
+get '/commentary/includes/**' => sub {
+    my ($path) = splat;
+
+    return send_file(path($includes_dir, @$path), system_path => 1);
+};
+
+# Stole^H^H^H^H^HBorrowed (and adapted) from Dancer::Plugin::EscapeHTML
+{
+    my %seen;
+
+    # Encode values, recursing down into hash/arrayrefs.
+    sub encode_data {
+        my $in = shift;
+     
+        return unless defined $in; # avoid interpolation warnings
+        return HTML::Entities::encode_entities($in)
+            unless ref $in;
+     
+        return $in
+            if exists $seen{scalar $in}; # avoid reference loops
+     
+        $seen{scalar $in} = 1;
+     
+        if (ref $in eq 'ARRAY') {
+            $in->[$_] = encode_data($in->[$_]) for (0..$#$in);
+        } 
+        elsif (ref $in eq 'HASH') {
+            while (my($k,$v) = each %$in) {
+                $in->{$k} = encode_data($v);
+            }
+        }
+     
+        return $in;
+    }
+}
+
+sub js_config {
+    my $config = {
+        auth => {
+            methods => [ ]
+        },
+        user => {
+            auth => 0
+        },
+    };
+
+    for my $method (@auth_methods) {
+        if (!$config->{user}{auth}) {
+            $config->{user}{auth} = $method->auth_data;
+            $config->{user} = encode_data {
+                %{$config->{user}},
+                %{$method->method_data->{auth_data}}
+            };
+        }
+
+        push @{$config->{auth}{methods}}, $method->method_data;
+    }
+
+    return $config;
+}
+
 1;
+
+__END__
+
+=head1 SYNOPSIS
+
+Add the plugin to your application:
+
+    use Dancer::Plugin::Commentary;
+
+Configure its settings in the YAML configuration file:
+
+    plugins:
+      Commentary:
+        auth:
+          methods:
+            twitter:
+              consumer_key: "123foo"
+              ...
+            github:
+              client_id: "456bar"
+              ...
+        storage: "memory"
