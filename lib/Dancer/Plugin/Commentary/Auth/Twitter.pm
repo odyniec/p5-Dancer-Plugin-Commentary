@@ -21,6 +21,13 @@ sub init {
     warn 'No Dancer::Plugin::Auth::Twitter settings found'
         if !exists config->{plugins}{'Auth::Twitter'};
 
+    if (!exists config->{plugins}{'Auth::Twitter'}{callback_url}) {
+        config->{plugins}{'Auth::Twitter'}{callback_url} =
+            '//' . config->{server} . 
+                (config->{port} != 80 ? ':' . config->{port} : '') .
+                '/commentary/auth/twitter/callback';
+    }
+
     auth_twitter_init();
 
     return $class;
