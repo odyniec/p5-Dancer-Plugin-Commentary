@@ -14,6 +14,10 @@ $Dancer::Plugin::Commentary::Auth::methods{twitter} = __PACKAGE__;
 sub init {
     my ($class, $settings) = @_;
 
+    if ($settings) {
+        config->{plugins}{'Auth::Twitter'} = $settings;
+    }
+
     warn 'No Dancer::Plugin::Auth::Twitter settings found'
         if !exists config->{plugins}{'Auth::Twitter'};
 
