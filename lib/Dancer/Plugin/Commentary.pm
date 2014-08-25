@@ -65,27 +65,41 @@ hook 'after_file_render' => sub {
         $content = $response->content;
     }
 
-    if ($content =~ m{</head>}) {
-        if (my $stylesheets = $settings->{stylesheets}) {
-            if (ref($stylesheets) eq 'HASH') {
-                # TODO: Handle conditional stylesheets
-            }
-            else {
-                my $stylesheets_content = join '', map {
-                    qq{<link rel="stylesheet" type="text/css" href="$_" />}
-                } @$stylesheets;
-                $content =~ s{</head>}{$stylesheets_content</head>}s;
-            }
+    if ($settings->{display_mode} eq 'iframe' &&
+        $ENV{REQUEST_URI} !~ qr{^ /commentary /includes/iframe\.html }x)
+    {
+        if ($content =~ m{</body>}) {
+            # Inject JavaScript code to add an iframe
+            my $js = sprintf <<END, request->uri_base, 'commentary', request->uri_base;
+<script type="text/javascript">var __commentaryBaseURI = '%s/%s';</script>
+<script type="text/javascript" src="%s/commentary/assets/js/commentary-iframe.js"></script>
+END
+            $content =~ s{</body>}{$js</body>}s;
         }
     }
+    else {
+        if ($content =~ m{</head>}) {
+            if (my $stylesheets = $settings->{stylesheets}) {
+                if (ref($stylesheets) eq 'HASH') {
+                    # TODO: Handle conditional stylesheets
+                }
+                else {
+                    my $stylesheets_content = join '', map {
+                        qq{<link rel="stylesheet" type="text/css" href="$_" />}
+                    } @$stylesheets;
+                    $content =~ s{</head>}{$stylesheets_content</head>}s;
+                }
+            }
+        }
 
-    if ($content =~ m{</body>}) {
-        # Inject our JavaScript code
-        my $js = sprintf <<END, to_json(js_config), request->uri_base;
+        if ($content =~ m{</body>}) {
+            # Inject our JavaScript code
+            my $js = sprintf <<END, to_json(js_config), request->uri_base;
 <script type="text/javascript">var __commentaryCfg = %s;</script>
 <script type="text/javascript" src="%s/commentary/assets/js/commentary.js"></script>
 END
-        $content =~ s{</body>}{$js</body>}s;
+            $content =~ s{</body>}{$js</body>}s;
+        }
     }
 
     $response->content($content);
@@ -180,18 +194,36 @@ sub js_config {
         user => {
             auth => 0
         },
+        display_mode => $settings->{display_mode},
     };
 
+    my $auth_callback_url;
+
+    if (param('l')) {
+        $auth_callback_url = request->uri_base . param('l');
+    }
+    else {
+        $auth_callback_url = request->uri_base . request->uri;
+    }
+
+    # FIXME: Scheme sometimes mysteriously disappears from the request object?
+    if ($auth_callback_url !~ qr{^ \w+ :// }x) {
+        $auth_callback_url =~ s{^ :?/* }{}x;
+        $auth_callback_url = (request->scheme || 'http') . '://' . $auth_callback_url;
+    }
+
     for my $method (@auth_methods) {
+        my $method_data = $method->method_data($auth_callback_url);
+
         if (!$config->{user}{auth}) {
             $config->{user}{auth} = $method->auth_data;
             $config->{user} = encode_data {
                 %{$config->{user}},
-                %{$method->method_data->{auth_data}}
+                %{$method_data->{auth_data}}
             };
         }
 
-        push @{$config->{auth}{methods}}, $method->method_data;
+        push @{$config->{auth}{methods}}, $method_data;
     }
 
     return $config;
