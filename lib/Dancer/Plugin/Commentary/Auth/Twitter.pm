@@ -39,7 +39,7 @@ sub authentication_url {
     my $url = twitter->get_authentication_url(
         'callback' => request->uri_base .
             '/commentary/auth/twitter/callback?callback=' .
-                uri_escape(request->uri_base . request->uri)
+                ($callback_url || uri_escape(request->uri_base . request->uri))
     );
 
     session request_token        => twitter->request_token;
@@ -61,6 +61,31 @@ sub auth_data {
     else {
         return 0;
     }
+}
+
+sub method_data {
+    my ($class, $callback_url) = @_;
+
+    my $data = {
+        name                => 'Twitter',
+        authenticated       => 0,
+        authentication_url  => '',
+        auth_data           => {},
+    };
+
+    if (session('twitter_user')) {
+        $data->{authenticated} = 1;
+        $data->{auth_data}{display_name} = session('twitter_user')->{name};
+        $data->{auth_data}{url} = session('twitter_user')->{url};
+        $data->{auth_data}{avatar_url} =
+            session('twitter_user')->{profile_image_url};
+    }
+    else {
+        $data->{authentication_url} = '' .
+            $class->authentication_url($callback_url);
+    }
+
+    return $data;
 }
 
 # This is the same as Dancer::Plugin::Auth::Twitter's callback route, except it
