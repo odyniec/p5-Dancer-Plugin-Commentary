@@ -95,10 +95,19 @@
                 </div>
             <% } %>
             <div class="commentary-comment-body">
-                <textarea placeholder="Add comment..."></textarea>
+                <textarea
+                    placeholder="Add comment..."
+                    <% if (!(user.auth instanceof Object)) { %>
+                        disabled
+                    <% } %>
+                    ></textarea>
             </div>
             <div class="commentary-comment-actions">
-                <button class="commentary-comment-actions-submit">Add Comment</button>
+                <button class="commentary-comment-actions-submit"
+                    <% if (!(user.auth instanceof Object)) { %>
+                        disabled
+                    <% } %>
+                    >Add Comment</button>
             </div>
         </div>
     </script>
