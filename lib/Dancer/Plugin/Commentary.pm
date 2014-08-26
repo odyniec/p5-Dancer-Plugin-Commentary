@@ -22,7 +22,11 @@ my $dist_dir = File::ShareDir::dist_dir('Dancer-Plugin-Commentary');
 my $assets_dir = path $dist_dir, 'assets';
 my $includes_dir = path $dist_dir, 'includes';
 
-my $settings = plugin_setting;
+my $settings = {
+    display_mode    => '',
+
+    %{ plugin_setting() }
+};
 
 sub encode_data;
 sub js_config;
