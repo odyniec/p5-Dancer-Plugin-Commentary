@@ -255,4 +255,5 @@ Configure its settings in the YAML configuration file:
             github:
               client_id: "456bar"
               ...
+        display_mode: "iframe"
         storage: "memory"
