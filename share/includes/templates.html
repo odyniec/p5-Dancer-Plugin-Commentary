@@ -58,9 +58,7 @@
                     <ul>
                         <% $.each(auth.methods, function (i, method) { %>
                             <li>
-                                <a href="<%= method.authentication_url %>">
-                                    <%= method.name %>
-                                </a>
+                                <a href="<%= method.authentication_url %>"><%= method.name %></a>
                             </li>
                         <% }) %>
                     </ul>
