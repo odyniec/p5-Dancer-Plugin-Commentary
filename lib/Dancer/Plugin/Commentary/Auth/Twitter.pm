@@ -55,7 +55,7 @@ sub auth_data {
 
     if (session('twitter_user')) {
         return {
-            method => 'Twitter',
+            method => 'twitter',
         };
     }
     else {
