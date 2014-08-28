@@ -64,6 +64,29 @@ sub auth_data {
     }
 }
 
+sub method_data {
+    my ($class) = @_;
+
+    my $data = {
+        name                => 'Github',
+        authenticated       => 0,
+        authentication_url  => '',
+        auth_data           => {},
+    };
+
+    if (session('github_user')) {
+        $data->{authenticated} = 1;
+        $data->{auth_data}{display_name} = session('github_user')->{name};
+        $data->{auth_data}{url} = session('github_user')->{html_url};
+        $data->{auth_data}{avatar_url} = session('github_user')->{avatar_url};
+    }
+    else {
+        $data->{authentication_url} = '' . authentication_url;
+    }
+
+    return $data;
+}
+
 # This is the same as Dancer::Plugin::Auth::Github's callback route, except it
 # also supports passing a success callback URL in query string
 get '/commentary/auth/github/callback' => sub {
