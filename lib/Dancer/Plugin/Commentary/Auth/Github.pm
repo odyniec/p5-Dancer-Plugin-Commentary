@@ -56,7 +56,7 @@ sub auth_data {
 
     if (session('github_user')) {
         return {
-            method => 'github',
+            method => 'Github',
         };
     }
     else {
