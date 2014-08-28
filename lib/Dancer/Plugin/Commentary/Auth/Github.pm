@@ -48,7 +48,7 @@ sub authentication_url {
         '&redirect_uri=' .
             uri_escape(request->uri_base .
                 '/commentary/auth/github/callback?callback=' .
-                    ($callback_url || uri_escape(request->uri_base . request->uri));
+                    ($callback_url || uri_escape(request->uri_base . request->uri)));
 }
 
 sub auth_data {
