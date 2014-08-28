@@ -22,6 +22,10 @@ my $state_salt = join '', map { sprintf '%x', rand(16) } 1..20;
 sub init {
     my ($class, $settings) = @_;
 
+    if ($settings) {
+        config->{plugins}{'Auth::Github'} = $settings;
+    }
+
     warn 'No Dancer::Plugin::Auth::Github settings found'
         if !exists config->{plugins}{'Auth::Github'};
 
