@@ -5,22 +5,30 @@ use warnings;
 
 use parent 'Dancer::Plugin::Commentary::Storage';
 
-my $comments;
+$Dancer::Plugin::Commentary::Storage::engines{memory} = __PACKAGE__;
 
-sub init {
-    $comments = [];
+sub new {
+    my ($class) = @_;
+
+    my $self = {
+        _comments =>  [],
+    };
+
+    return bless $self, $class;
 }
 
-sub add {
-    my ($comment) = @_;
+sub init { }
 
-    push @$comments, $comment;
+sub add {
+    my ($self, $comment) = @_;
+
+    push @{$self->{_comments}}, $comment;
 
     return $comment;
 }
 
 sub get {
-    my ($cond) = @_;
+    my ($self, $cond) = @_;
 
     return [ grep {
         eval {
@@ -29,7 +37,7 @@ sub get {
             }
             return 1;
         }
-    } @$comments ];
+    } @{$self->{_comments}} ];
 }
 
 1;

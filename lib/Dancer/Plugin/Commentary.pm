@@ -47,7 +47,7 @@ while (my ($method, $method_settings) = each %{$settings->{auth}{methods}}) {
     }
 }
 
-Dancer::Plugin::Commentary::Storage::Memory::init;
+my $storage = Dancer::Plugin::Commentary::Storage::Memory->new();
 
 hook 'after_file_render' => sub {
     my $response = shift;
@@ -128,7 +128,7 @@ post '/commentary/comments' => sub {
         $author->{avatar_url} = session('github_user')->{avatar_url};
     }
 
-    my $new_comment = Dancer::Plugin::Commentary::Storage::Memory::add({
+    my $new_comment = $storage->add({
         timestamp   => time,
         body        => param('body'),
         post_url    => param('post_url'),
@@ -143,9 +143,13 @@ get '/commentary/comments/**' => sub {
 
     my $post_url = join '/', @$path;
 
-    return to_json encode_data Dancer::Plugin::Commentary::Storage::Memory::get({
+    return to_json encode_data $storage->get({
         post_url => "/$post_url"
     });
+};
+
+get '/commentary/comments/' => sub {
+    forward '/commentary/comments//';
 };
 
 get '/commentary/assets/**' => sub {
