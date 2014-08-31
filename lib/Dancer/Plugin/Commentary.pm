@@ -16,6 +16,7 @@ use URI::Escape;
 use Dancer::Plugin::Commentary::Auth::Github;
 use Dancer::Plugin::Commentary::Auth::Twitter;
 
+use Dancer::Plugin::Commentary::Storage::DBI;
 use Dancer::Plugin::Commentary::Storage::Memory;
 
 my $dist_dir = File::ShareDir::dist_dir('Dancer-Plugin-Commentary');
