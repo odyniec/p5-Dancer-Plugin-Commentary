@@ -24,6 +24,7 @@ my $includes_dir = path $dist_dir, 'includes';
 
 my $settings = {
     display_mode    => '',
+    storage         => 'memory',
 
     %{ plugin_setting() }
 };
