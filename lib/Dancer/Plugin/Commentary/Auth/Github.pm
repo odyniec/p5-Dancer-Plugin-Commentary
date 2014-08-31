@@ -33,7 +33,7 @@ sub init {
 
     $client_id = config->{plugins}{'Auth::Github'}{client_id};
     $client_secret = config->{plugins}{'Auth::Github'}{client_secret};
-    $scope = config->{plugins}{'Auth::Github'}{scope};
+    $scope = config->{plugins}{'Auth::Github'}{scope} || '';
 
     return $class;
 }
