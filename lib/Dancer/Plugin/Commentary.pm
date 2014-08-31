@@ -48,7 +48,9 @@ while (my ($method, $method_settings) = each %{$settings->{auth}{methods}}) {
     }
 }
 
-my $storage = Dancer::Plugin::Commentary::Storage::Memory->new();
+my $storage =
+    $Dancer::Plugin::Commentary::Storage::engines{$settings->{storage}}
+        ->new($settings->{storage_options} || {});
 
 hook 'after_file_render' => sub {
     my $response = shift;
