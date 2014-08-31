@@ -30,9 +30,9 @@
                         <%= comment.author.display_name %>
                     <% } %>
                 </span>
-                <% if (comment.author.auth_method == 'twitter') { %>
+                <% if (comment.author.auth_method == 'Twitter') { %>
                     <span class="commentary-comment-author-auth-method fa fa-twitter" title="Twitter"></span>
-                <% } else if (comment.author.auth_method == 'github') { %>
+                <% } else if (comment.author.auth_method == 'Github') { %>
                     <span class="commentary-comment-author-auth-method fa fa-github" title="GitHub"></span>
                 <% } %>
             </div>
@@ -83,9 +83,9 @@
                             <%= user.display_name %>
                         <% } %>
                     </span>
-                    <% if (user.auth.method == 'twitter') { %>
+                    <% if (user.auth.method == 'Twitter') { %>
                         <span class="commentary-comment-author-auth-method fa fa-twitter" title="Twitter"></span>
-                    <% } else if (user.auth.method == 'github') { %>
+                    <% } else if (user.auth.method == 'Github') { %>
                         <span class="commentary-comment-author-auth-method fa fa-github" title="GitHub"></span>
                     <% } %>
                 </div>
