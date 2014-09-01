@@ -265,3 +265,8 @@ Configure its settings in the YAML configuration file:
               ...
         display_mode: "iframe"
         storage: "memory"
+        storage_options:
+          dsn: "DBI:mysql:database=commentary;host=127.0.0.1;port=3306"   # DBI Data Source Name
+          table: "comments"     # Name of the table to store comments
+          user: "user"          # Username to connect to the database
+          password: "password"  # Password to connect to the database          
