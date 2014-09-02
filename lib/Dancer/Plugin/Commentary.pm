@@ -139,6 +139,7 @@ post '/commentary/comments' => sub {
         author      => $author,
     });
 
+    status 'created';
     return to_json encode_data $new_comment;
 };
 

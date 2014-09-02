@@ -34,7 +34,7 @@ my %valid_comment_data = (
 
 $res = dancer_response(POST => '/commentary/comments',
     { params => \%valid_comment_data });
-is($res->status, 200, 'Response is successful');
+is($res->status, 201, 'Response is "201 Created"');
 $res_data = from_json $res->content;
 ok(delete $res_data->{timestamp} <= time, 'Expected timestamp is returned');
 is_deeply(delete $res_data->{author}, {}, 'Author data is empty as expected');
