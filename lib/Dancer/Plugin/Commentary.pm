@@ -140,6 +140,7 @@ post '/commentary/comments' => sub {
     });
 
     status 'created';
+    header location => uri_for('/commentary/comments/' . param('post_url'));
     return to_json encode_data $new_comment;
 };
 
