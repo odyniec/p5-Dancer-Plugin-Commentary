@@ -132,6 +132,21 @@ post '/commentary/comments' => sub {
         $author->{avatar_url} = session('github_user')->{avatar_url};
     }
 
+    my @errors;
+
+    # Check if comment body is not empty
+    if (param('body') =~ /^$/) {
+        push @errors, {
+            code    => 'params.body.empty',
+            msg     => 'Comment body cannot be empty',
+        };
+    }
+
+    if (@errors) {
+        status 422;
+        return to_json \@errors;
+    }
+
     my $new_comment = $storage->add({
         timestamp   => time,
         body        => param('body'),

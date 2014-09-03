@@ -46,4 +46,14 @@ is_deeply(delete $res_data->{author}, {}, 'Author data is empty as expected');
 is_deeply($res_data, \%valid_comment_data,
     'The data in the response matches what was posted');
 
+# Attempt to post a new comment with empty body
+
+$res = dancer_response(POST => '/commentary/comments',
+    { params => { post_url => '/foo.html', body => '' } });
+is($res->status, 422, 'Response is "422 Unprocessable Entity"');
+$res_data = from_json $res->content;
+is(scalar @$res_data, 1, 'One error is returned');
+is($res_data->[0]{code}, 'params.body.empty',
+    'The correct error code is returned');
+
 done_testing;
