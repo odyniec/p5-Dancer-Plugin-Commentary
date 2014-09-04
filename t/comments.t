@@ -56,4 +56,13 @@ is(scalar @$res_data, 1, 'One error is returned');
 is($res_data->[0]{code}, 'params.body.empty',
     'The correct error code is returned');
 
+# Retrieve the newly posted comment
+
+$res = dancer_response(GET => '/commentary/comments/foo.html');
+is($res->status, 200, 'Response is "200 OK"');
+$res_data = from_json $res->content;
+is(scalar @$res_data, 1, 'One comment is returned');
+is($res_data->[0]{body}, $valid_comment_data{body},
+    'The expected comment body is returned');
+
 done_testing;
