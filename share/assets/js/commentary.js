@@ -158,9 +158,19 @@ function doComments($parent, comments) {
                 body: $('#commentary-new-comment .commentary-comment-body textarea').val(),
             },
             function (comment) {
-                $comments.append(tpl('comment', {
-                    comment: prepareComment(comment)
-                }));
+                $comments.append(
+                    $(tpl('comment', {
+                        comment: prepareComment(comment)
+                    })).hide().fadeIn('fast')
+                );
+
+                $('.commentary-message').removeClass('commentary-message-error');
+                $('.commentary-message').addClass('commentary-message-info');
+                $('.commentary-message').html(
+                    '<span class="fa fa-check-circle" /> New comment posted!'
+                );
+                quickShow($('.commentary-message'));
+
                 $('.commentary-comments-count').text(
                     $('.commentary-comments .commentary-comment').length +
                         ' comment' + ($('.commentary-comments .commentary-comment').length == 1 ? '' : 's')
@@ -170,11 +180,72 @@ function doComments($parent, comments) {
                     window.parent.__commentaryIframeResize();
             },
             'json'
-        );
+        )
+        .fail(function (xhr) {
+            var errors = xhr.responseJSON;
+            $('.commentary-message').removeClass('commentary-message-info');
+            $('.commentary-message').addClass('commentary-message-error');
+            $('.commentary-message').html(
+                '<span class="fa fa-exclamation-circle" /> ' + errors[0]['msg']
+            );
+            quickShow($('.commentary-message'));
+        });
 
         /* Clear the comment box */
         $('#commentary-new-comment .commentary-comment-body textarea').val('')
     });
+}
+
+var quickShowTimers = {};
+
+/* Show an element with an effect similar to slideDown, then hide it two seconds
+   after a key is pressed or mouse cursor moved. */
+function quickShow(element) {
+    return $(element).animate(
+        {
+            height: 'show',
+            marginBottom: 'show',
+            marginLeft: 'show',
+            marginRight: 'show',
+            marginTop: 'show',
+        },
+        {
+            duration: 'fast',
+            progress: function () {
+                if (window.parent.__commentaryIframeResize)
+                    window.parent.__commentaryIframeResize();
+            },
+            complete: function () {
+                $(document).one('keydown mousemove', function () {
+                    if (quickShowTimers[element]) {
+                        clearTimeout(quickShowTimers[element]);
+                    }
+
+                    quickShowTimers[element] = setTimeout(function () {
+                        $('.commentary-message').animate({
+                                height: 'hide',
+                                marginBottom: 'hide',
+                                marginLeft: 'hide',
+                                marginRight: 'hide',
+                                marginTop: 'hide',
+                            },
+                            {
+                                duration: 'fast',
+                                progress: function () {
+                                    if (window.parent.__commentaryIframeResize)
+                                        window.parent.__commentaryIframeResize();
+                                },
+                                complete: function () {
+                                    if (window.parent.__commentaryIframeResize)
+                                        window.parent.__commentaryIframeResize();                                    
+                                }
+                            }
+                        );
+                    }, 2000);
+                });
+            }
+        }
+    );
 }
 
 })();
