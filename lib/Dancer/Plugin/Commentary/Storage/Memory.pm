@@ -11,7 +11,7 @@ sub new {
     my ($class) = @_;
 
     my $self = {
-        _comments =>  [],
+        _comments =>  {},
     };
 
     return bless $self, $class;
@@ -22,22 +22,34 @@ sub init { }
 sub add {
     my ($self, $comment) = @_;
 
-    push @{$self->{_comments}}, $comment;
+    $self->{_comments}{my $id = 1 + keys %{$self->{_comments}}} = $comment;
 
-    return $comment;
+    return {
+        id => $id,
+        %$comment
+    };
 }
 
 sub get {
     my ($self, $cond) = @_;
 
-    return [ grep {
-        eval {
-            for my $field (keys %$cond) {
-                return 0 if ($_->{$field} ne $cond->{$field});
+    return [
+        grep {
+            eval {
+                for my $field (keys %$cond) {
+                    return 0 if ($_->{$field} ne $cond->{$field});
+                }
+                return 1;
             }
-            return 1;
+        } 
+        map {
+            {
+                id => $_,
+                %{$self->{_comments}{$_}}
+            }
         }
-    } @{$self->{_comments}} ];
+        keys %{$self->{_comments}}
+    ];
 }
 
 1;
