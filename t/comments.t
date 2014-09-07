@@ -88,7 +88,7 @@ $res = dancer_response(POST => '/commentary/search/comments',
     { post_url => '/foo.html' });
 is($res->status, 200, 'Response is "200 OK"');
 $res_data = from_json $res->content;
-is(scalar @$res_data, 2, 'One comment is returned');
+is(scalar @$res_data, 2, 'Two comments are returned');
 is_deeply([ sort(map { $_->{id} } @$res_data) ], [ 1, 2 ],
     'The returned comments have the expected IDs');
 
