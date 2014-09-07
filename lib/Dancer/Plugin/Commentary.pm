@@ -155,7 +155,7 @@ post '/commentary/comments' => sub {
     });
 
     status 'created';
-    header location => uri_for('/commentary/comments/' . param('post_url'));
+    header location => uri_for('/commentary/comments/' . $new_comment->{id});
     return to_json encode_data $new_comment;
 };
 
