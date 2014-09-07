@@ -114,9 +114,16 @@ function start() {
 
     if ($parent) {
         /* We do have a $parent to attach comments to, so let's get them */
-        $.get('/commentary/comments' + contentURL(), function (comments) {
-            doComments($parent, comments);
-        }, 'json');
+        $.post(
+            '/commentary/search/comments',
+            { 
+                post_url: contentURL()
+            },
+            function (comments) {
+                doComments($parent, comments);
+            },
+            'json'
+        );
     }
 }
 
