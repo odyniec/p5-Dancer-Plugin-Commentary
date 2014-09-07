@@ -181,6 +181,25 @@ post '/commentary/search/comments' => sub {
     });
 };
 
+del '/commentary/comments/:id' => sub {
+    if (!@{$storage->get({ id => param('id') })}) {
+        status 'not found';
+        return;
+    }
+
+    if ($storage->remove(param('id'))) {
+        status 'no content';
+        return;
+    }
+    else {
+        # TODO: Check last_error, there's a chance that the comment happened to
+        # get deleted after we checked that it exists (a race condition) -- if
+        # that's the case, emit a 404 response.
+        status 'internal server error';
+        return;
+    }
+};
+
 get '/commentary/assets/**' => sub {
     my ($path) = splat;
 
