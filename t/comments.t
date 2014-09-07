@@ -67,4 +67,29 @@ is(scalar @$res_data, 1, 'One comment is returned');
 is($res_data->[0]{body}, $valid_comment_data{body},
     'The expected comment body is returned');
 
+# Post a second comment
+
+$res = dancer_response(POST => '/commentary/comments',
+    { params => \%valid_comment_data });
+is($res->status, 201, 'Response is "201 Created"');
+is($res->header('location'),
+    uri_for ('/commentary/comments/2'),
+    'The expected location header is returned');
+$res_data = from_json $res->content;
+is(delete $res_data->{id}, 2, 'Expected ID is returned');
+ok(delete $res_data->{timestamp} <= time, 'Expected timestamp is returned');
+is_deeply(delete $res_data->{author}, {}, 'Author data is empty as expected');
+is_deeply($res_data, \%valid_comment_data,
+    'The remaining data in the response matches what was posted');
+
+# Retrieve the two comments
+
+$res = dancer_response(POST => '/commentary/search/comments',
+    { post_url => '/foo.html' });
+is($res->status, 200, 'Response is "200 OK"');
+$res_data = from_json $res->content;
+is(scalar @$res_data, 2, 'One comment is returned');
+is_deeply([ sort(map { $_->{id} } @$res_data) ], [ 1, 2 ],
+    'The returned comments have the expected IDs');
+
 done_testing;
