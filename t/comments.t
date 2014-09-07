@@ -87,4 +87,24 @@ is(scalar @$res_data, 2, 'Two comments are returned');
 is_deeply([ sort(map { $_->{id} } @$res_data) ], [ 1, 2 ],
     'The returned comments have the expected IDs');
 
+# Remove the first comment
+
+$res = dancer_response(DELETE => '/commentary/comments/1');
+is($res->status, 204, 'Response is "204 No Content"');
+is($res->content, '', 'Reponse content is empty');
+
+# Retrieve comments after one was deleted
+
+$res = dancer_response(POST => '/commentary/search/comments',
+    { post_url => '/foo.html' });
+is($res->status, 200, 'Response is "200 OK"');
+$res_data = from_json $res->content;
+is(scalar @$res_data, 1, 'One comment is returned');
+is($res_data->[0]{id}, 2, 'The returned comment has the expected ID');
+
+# Attempt to remove an already removed comment
+
+$res = dancer_response(DELETE => '/commentary/comments/1');
+is($res->status, 404, 'Response is "404 Not Found"');
+
 done_testing;
