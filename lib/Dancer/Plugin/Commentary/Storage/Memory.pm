@@ -52,4 +52,17 @@ sub get {
     ];
 }
 
+sub remove {
+    my ($self, $id) = @_;
+
+    if (delete $self->{_comments}{$id}) {
+        return 1;
+    }
+    else {
+        # TODO: Set error explaining that the ID was not found
+        #$self->{_last_error} = ...
+        return 0;
+    }
+}
+
 1;
