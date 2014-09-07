@@ -38,13 +38,14 @@ $res = dancer_response(POST => '/commentary/comments',
     { params => \%valid_comment_data });
 is($res->status, 201, 'Response is "201 Created"');
 is($res->header('location'),
-    uri_for ('/commentary/comments/' . $valid_comment_data{post_url}),
+    uri_for ('/commentary/comments/1'),
     'The expected location header is returned');
 $res_data = from_json $res->content;
+is(delete $res_data->{id}, 1, 'Expected ID is returned');
 ok(delete $res_data->{timestamp} <= time, 'Expected timestamp is returned');
 is_deeply(delete $res_data->{author}, {}, 'Author data is empty as expected');
 is_deeply($res_data, \%valid_comment_data,
-    'The data in the response matches what was posted');
+    'The remaining data in the response matches what was posted');
 
 # Attempt to post a new comment with empty body
 
@@ -58,7 +59,8 @@ is($res_data->[0]{code}, 'params.body.empty',
 
 # Retrieve the newly posted comment
 
-$res = dancer_response(GET => '/commentary/comments/foo.html');
+$res = dancer_response(POST => '/commentary/search/comments',
+    { post_url => '/foo.html' });
 is($res->status, 200, 'Response is "200 OK"');
 $res_data = from_json $res->content;
 is(scalar @$res_data, 1, 'One comment is returned');
