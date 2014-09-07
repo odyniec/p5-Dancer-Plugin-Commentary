@@ -173,6 +173,14 @@ get '/commentary/comments/' => sub {
     forward '/commentary/comments//';
 };
 
+post '/commentary/search/comments' => sub {
+    my %cond = params('body');
+
+    return to_json encode_data $storage->get({
+        @cond{ grep { exists $cond{$_} } qw( id post_url ) }
+    });
+};
+
 get '/commentary/assets/**' => sub {
     my ($path) = splat;
 
