@@ -22,11 +22,6 @@ use Test::More import => [ '!pass' ];
 my $res;
 my $res_data;
 
-$res = dancer_response(GET => '/commentary/comments/');
-is($res->status, 200, 'Response is successful');
-$res_data = from_json $res->content;
-is_deeply($res_data, [], 'Response is an empty arrayref');
-
 # Post a new comment
 
 my %valid_comment_data = (

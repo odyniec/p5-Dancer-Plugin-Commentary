@@ -159,20 +159,6 @@ post '/commentary/comments' => sub {
     return to_json encode_data $new_comment;
 };
 
-get '/commentary/comments/**' => sub {
-    my ($path) = splat;
-
-    my $post_url = join '/', @$path;
-
-    return to_json encode_data $storage->get({
-        post_url => "/$post_url"
-    });
-};
-
-get '/commentary/comments/' => sub {
-    forward '/commentary/comments//';
-};
-
 post '/commentary/search/comments' => sub {
     my %cond = params('body');
 
