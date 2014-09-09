@@ -53,9 +53,11 @@ my $storage =
     $Dancer::Plugin::Commentary::Storage::engines{$settings->{storage}}
         ->new($settings->{storage_options} || {});
 
-hook 'after_file_render' => sub {
-    my $response = shift;
+hook 'after_file_render' => \&after_hook;
+hook 'after' => \&after_hook;
 
+sub after_hook {
+    my $response = shift;
     my $content;
 
     # Ignore non-HTML content
@@ -113,7 +115,7 @@ END
     $response->content($content);
 
     return $response;
-};
+}
 
 post '/commentary/comments' => sub {
     my $author = {};
