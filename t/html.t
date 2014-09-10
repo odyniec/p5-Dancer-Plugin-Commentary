@@ -31,6 +31,11 @@ get '/not-really-html.txt' => sub {
     return '<html><head></head><body></body></html>';
 };
 
+get '/nobody.html' => sub {
+    content_type 'text/html';
+    return '<html><corpse></corpse></html>';
+};
+
 $res = dancer_response(GET => '/body.html');
 like($res->content, qr{ __commentaryCfg }x,
     'A text/html file with <body> gets processed');
@@ -38,5 +43,9 @@ like($res->content, qr{ __commentaryCfg }x,
 $res = dancer_response(GET => '/not-really-html.txt');
 unlike($res->content, qr{ __commentaryCfg }x,
     'A non-text/html file with <body> does not get processed');
+
+$res = dancer_response(GET => '/nobody.html');
+unlike($res->content, qr{ __commentaryCfg }x,
+    'A text/html file with no <body> does not get processed');
 
 done_testing;
