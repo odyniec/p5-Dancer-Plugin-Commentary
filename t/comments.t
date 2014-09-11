@@ -22,6 +22,14 @@ use Test::More import => [ '!pass' ];
 my $res;
 my $res_data;
 
+# Retrieve an empty list of comments
+
+$res = dancer_response(POST => '/commentary/search/comments',
+    { post_url => '/foo.html' });
+is($res->status, 200, 'Response is "200 OK"');
+$res_data = from_json $res->content;
+is_deeply($res_data, [], 'An empty list is returned');
+
 # Post a new comment
 
 my %valid_comment_data = (
