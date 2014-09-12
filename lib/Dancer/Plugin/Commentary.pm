@@ -60,6 +60,11 @@ sub after_hook {
     my $response = shift;
     my $content;
 
+    # Flag the response as already processed to prevent if from being processed
+    # twice by both "after_file_render" and "after"
+    return if exists $response->{_commentary}{done};
+    $response->{_commentary}{done} = 1;
+
     # Ignore non-HTML content
     return unless exists { map { $_ => 1 }
         qw( application/xhtml+xml text/html ) }
