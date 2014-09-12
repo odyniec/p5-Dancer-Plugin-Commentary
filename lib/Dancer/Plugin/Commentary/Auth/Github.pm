@@ -65,7 +65,7 @@ sub auth_data {
 }
 
 sub method_data {
-    my ($class) = @_;
+    my ($class, $callback_url) = @_;
 
     my $data = {
         name                => 'Github',
@@ -81,7 +81,7 @@ sub method_data {
         $data->{auth_data}{avatar_url} = session('github_user')->{avatar_url};
     }
     else {
-        $data->{authentication_url} = '' . authentication_url;
+        $data->{authentication_url} = '' . authentication_url($callback_url);
     }
 
     return $data;
