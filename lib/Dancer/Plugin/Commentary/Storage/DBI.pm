@@ -3,7 +3,7 @@ package Dancer::Plugin::Commentary::Storage::DBI;
 use strict;
 use warnings;
 
-use Dancer ':syntax';
+use Dancer qw(from_json to_json);
 use DBI;
 
 use parent 'Dancer::Plugin::Commentary::Storage';
