@@ -109,7 +109,7 @@ END
 
         if ($content =~ m{</body>}) {
             # Inject our JavaScript code
-            my $js = sprintf <<END, to_json(js_config), request->uri_base;
+            my $js = sprintf <<END, to_json(js_config, {utf8 => 1}), request->uri_base;
 <script type="text/javascript">var __commentaryCfg = %s;</script>
 <script type="text/javascript" src="%s/commentary/assets/js/commentary.js"></script>
 END
