@@ -81,7 +81,7 @@ sub after_hook {
     }
 
     if ($settings->{display_mode} eq 'iframe' &&
-        $ENV{REQUEST_URI} !~ qr{^ /commentary /includes/iframe\.html }x)
+        request->env->{REQUEST_URI} !~ qr{^ /commentary /includes/iframe\.html }x)
     {
         if ($content =~ m{</body>}) {
             # Inject JavaScript code to add an iframe
