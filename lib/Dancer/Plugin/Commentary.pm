@@ -249,8 +249,8 @@ sub js_config {
 
     my $auth_callback_url;
 
-    if (param('l')) {
-        $auth_callback_url = request->uri_base . param('l');
+    if (exists request->params('query')->{l}) {
+        $auth_callback_url = request->uri_base . request->params('query')->{'l'};
     }
     else {
         $auth_callback_url = request->uri_base . request->uri;
