@@ -40,6 +40,8 @@ sub add {
 
     # FIXME: Handle errors
 
+    $comment->{id} = $self->_dbh->last_insert_id((undef) x 4);
+
     return $comment;
 }
 
