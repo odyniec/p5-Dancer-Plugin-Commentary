@@ -34,6 +34,8 @@
                     <span class="commentary-comment-author-auth-method fa fa-twitter" title="Twitter"></span>
                 <% } else if (comment.author.auth_method == 'Github') { %>
                     <span class="commentary-comment-author-auth-method fa fa-github" title="GitHub"></span>
+                <% } else if (comment.author.auth_method == 'Google') { %>
+                    <span class="commentary-comment-author-auth-method fa fa-google" title="Google"></span>
                 <% } %>
             </div>
             <div class="commentary-comment-date">
@@ -87,6 +89,8 @@
                         <span class="commentary-comment-author-auth-method fa fa-twitter" title="Twitter"></span>
                     <% } else if (user.auth.method == 'Github') { %>
                         <span class="commentary-comment-author-auth-method fa fa-github" title="GitHub"></span>
+                    <% } else if (user.auth.method == 'Google') { %>
+                        <span class="commentary-comment-author-auth-method fa fa-google" title="Google"></span>
                     <% } %>
                 </div>
             <% } else { %>
