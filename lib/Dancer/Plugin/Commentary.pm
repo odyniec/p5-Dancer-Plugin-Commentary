@@ -13,6 +13,7 @@ use File::ShareDir;
 use HTML::Entities;
 use URI::Escape;
 
+use Dancer::Plugin::Commentary::Auth::Google;
 use Dancer::Plugin::Commentary::Auth::Github;
 use Dancer::Plugin::Commentary::Auth::Twitter;
 
@@ -137,6 +138,12 @@ post '/commentary/comments' => sub {
         $author->{display_name} = session('github_user')->{name};
         $author->{url} = session('github_user')->{html_url};
         $author->{avatar_url} = session('github_user')->{avatar_url};
+    }
+    elsif (session('google_user')) {
+        $author->{auth_method} = 'Google';
+        $author->{display_name} = session('google_user')->{displayName};
+        $author->{url} = session('google_user')->{url};
+        $author->{avatar_url} = session('google_user')->{image}{url};
     }
 
     my @errors;
