@@ -59,8 +59,10 @@ sub remove {
         return 1;
     }
     else {
-        # TODO: Set error explaining that the ID was not found
-        #$self->{_last_error} = ...
+        $self->{_last_error} = {
+            code => 'storage.memory.comment_not_found',
+            msg => 'Comment not found',
+        };
         return 0;
     }
 }
