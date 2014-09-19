@@ -26,6 +26,7 @@ my $includes_dir = path $dist_dir, 'includes';
 
 my $settings = {
     display_mode    => '',
+    prefix          => '/commentary',
     storage         => 'memory',
 
     %{ plugin_setting() }
@@ -33,6 +34,11 @@ my $settings = {
 
 sub encode_data;
 sub js_config;
+
+my $previous_prefix = prefix;
+if ($settings->{prefix}) {
+    prefix $settings->{prefix};
+}
 
 my @auth_methods = ();
 
@@ -123,7 +129,7 @@ END
     return $response;
 }
 
-post '/commentary/comments' => sub {
+post '/comments' => sub {
     my $author = {};
 
     # FIXME: Move method-specific stuff to Auth modules
@@ -173,7 +179,7 @@ post '/commentary/comments' => sub {
     return to_json encode_data $new_comment;
 };
 
-post '/commentary/search/comments' => sub {
+post '/search/comments' => sub {
     my %cond = params('body');
 
     return to_json encode_data $storage->get({
@@ -182,7 +188,7 @@ post '/commentary/search/comments' => sub {
     });
 };
 
-del '/commentary/comments/:id' => sub {
+del '/comments/:id' => sub {
     if (!@{$storage->get({ id => param('id') })}) {
         status 'not found';
         return;
@@ -201,13 +207,13 @@ del '/commentary/comments/:id' => sub {
     }
 };
 
-get '/commentary/assets/**' => sub {
+get '/assets/**' => sub {
     my ($path) = splat;
 
     return send_file(path($assets_dir, @$path), system_path => 1);
 };
 
-get '/commentary/includes/**' => sub {
+get '/includes/**' => sub {
     my ($path) = splat;
 
     return send_file(path($includes_dir, @$path), system_path => 1);
@@ -285,6 +291,9 @@ sub js_config {
 
     return $config;
 }
+
+# Set back the previously set prefix
+prefix $previous_prefix || undef;
 
 1;
 
