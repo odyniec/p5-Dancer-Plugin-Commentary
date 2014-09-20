@@ -32,6 +32,12 @@ response_status_is(
 );
 
 response_status_is(
+    [ GET => '/foo/assets/js/commentary.js' ],
+    200,
+    'Response is "200 OK" for an assets route with prefix'
+);
+
+response_status_is(
     [ GET => '/other' ],
     200,
     'Response is "200 OK" for a non-plugin route'
