@@ -88,13 +88,13 @@ sub after_hook {
     }
 
     if ($settings->{display_mode} eq 'iframe' &&
-        request->env->{REQUEST_URI} !~ qr{^ /commentary /includes/iframe\.html }x)
+        request->env->{REQUEST_URI} !~ qr{^ $settings->{prefix} /includes/iframe\.html }x)
     {
         if ($content =~ m{</body>}) {
             # Inject JavaScript code to add an iframe
-            my $js = sprintf <<END, request->uri_base, 'commentary', request->uri_base;
-<script type="text/javascript">var __commentaryBaseURI = '%s/%s';</script>
-<script type="text/javascript" src="%s/commentary/assets/js/commentary-iframe.js"></script>
+            my $js = sprintf <<END, (request->uri_base, $settings->{prefix}) x 2;
+<script type="text/javascript">var __commentaryBaseURI = '%s%s';</script>
+<script type="text/javascript" src="%s%s/assets/js/commentary-iframe.js"></script>
 END
             $content =~ s{</body>}{$js</body>}s;
         }
@@ -116,9 +116,9 @@ END
 
         if ($content =~ m{</body>}) {
             # Inject our JavaScript code
-            my $js = sprintf <<END, to_json(js_config, {utf8 => 1}), request->uri_base;
+            my $js = sprintf <<END, to_json(js_config, {utf8 => 1}), request->uri_base, $settings->{prefix};
 <script type="text/javascript">var __commentaryCfg = %s;</script>
-<script type="text/javascript" src="%s/commentary/assets/js/commentary.js"></script>
+<script type="text/javascript" src="%s%s/assets/js/commentary.js"></script>
 END
             $content =~ s{</body>}{$js</body>}s;
         }
@@ -258,6 +258,7 @@ sub js_config {
             auth => 0
         },
         display_mode => $settings->{display_mode},
+        prefix => $settings->{prefix},
     };
 
     my $auth_callback_url;

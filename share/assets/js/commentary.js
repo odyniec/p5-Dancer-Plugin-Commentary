@@ -55,6 +55,7 @@ init();
 
 var cfg = __commentaryCfg,
     started = false,
+    prefix = cfg.prefix,
     tplHTML;
 
 function tpl(name, data) {
@@ -83,7 +84,7 @@ function start() {
         return;
 
     if (!tplHTML) {
-        $.get('/commentary/includes/templates.html',
+        $.get(prefix + '/includes/templates.html',
             function (html) {
                 tplHTML = html;
                 start();
@@ -115,7 +116,7 @@ function start() {
     if ($parent) {
         /* We do have a $parent to attach comments to, so let's get them */
         $.post(
-            '/commentary/search/comments',
+            prefix + '/search/comments',
             { 
                 post_url: contentURL()
             },
@@ -159,7 +160,7 @@ function doComments($parent, comments) {
     }
 
     $('#commentary-new-comment .commentary-comment-actions-submit').click(function () {
-        $.post('/commentary/comments',
+        $.post(prefix + '/comments',
             {
                 post_url: contentURL(),
                 body: $('#commentary-new-comment .commentary-comment-body textarea').val(),
