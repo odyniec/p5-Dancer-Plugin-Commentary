@@ -81,7 +81,8 @@ sub method_data {
         $data->{auth_data}{avatar_url} = session('github_user')->{avatar_url};
     }
     else {
-        $data->{authentication_url} = '' . authentication_url($callback_url);
+        $data->{authentication_url} = '' .
+            $class->authentication_url($callback_url);
     }
 
     return $data;
