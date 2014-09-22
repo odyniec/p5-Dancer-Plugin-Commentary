@@ -175,7 +175,8 @@ post '/comments' => sub {
     });
 
     status 'created';
-    header location => uri_for('/commentary/comments/' . $new_comment->{id});
+    header location => uri_for($settings->{prefix} . '/comments/' .
+        $new_comment->{id});
     return to_json encode_data $new_comment;
 };
 
