@@ -180,6 +180,17 @@ post '/comments' => sub {
     return to_json encode_data $new_comment;
 };
 
+get '/comments/:id' => sub {
+    my ($comment) = $storage->get({ id => param('id') });
+
+    if (!$comment) {
+        status 'not found';
+        return;
+    }
+
+    return to_json encode_data $comment;
+};
+
 post '/search/comments' => sub {
     my %cond = params('body');
 
