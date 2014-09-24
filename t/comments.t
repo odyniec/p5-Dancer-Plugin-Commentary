@@ -65,6 +65,8 @@ is($res_data->[0]{code}, 'params.body.empty',
 $res = dancer_response(GET => '/commentary/comments/1');
 is($res->status, 200, 'Response is "200 OK"');
 
+# Search for the newly posted comment
+
 $res = dancer_response(POST => '/commentary/search/comments',
     { post_url => '/foo.html' });
 is($res->status, 200, 'Response is "200 OK"');
