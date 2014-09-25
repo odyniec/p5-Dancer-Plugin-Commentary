@@ -65,6 +65,11 @@ is($res_data->[0]{code}, 'params.body.empty',
 $res = dancer_response(GET => '/commentary/comments/1');
 is($res->status, 200, 'Response is "200 OK"');
 
+# Attempt to retrieve a nonexisting comment
+
+$res = dancer_response(GET => '/commentary/comments/2');
+is($res->status, 404, 'Response is "404 Not Found"');
+
 # Search for the newly posted comment
 
 $res = dancer_response(POST => '/commentary/search/comments',
