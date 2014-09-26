@@ -181,7 +181,7 @@ post '/comments' => sub {
 };
 
 get '/comments/:id' => sub {
-    my ($comment) = $storage->get({ id => param('id') });
+    my ($comment) = @{$storage->get({ id => param('id') })};
 
     if (!$comment) {
         status 'not found';
