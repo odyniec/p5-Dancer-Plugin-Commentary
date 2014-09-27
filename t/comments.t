@@ -86,7 +86,7 @@ $res = dancer_response(POST => '/commentary/comments',
     { params => \%valid_comment_data });
 is($res->status, 201, 'Response is "201 Created"');
 is($res->header('location'),
-    uri_for ('/commentary/comments/2'),
+    uri_for('/commentary/comments/2'),
     'The expected location header is returned');
 $res_data = from_json $res->content;
 is(delete $res_data->{id}, 2, 'Expected ID is returned');
