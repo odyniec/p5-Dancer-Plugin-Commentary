@@ -13,6 +13,7 @@ use File::ShareDir;
 use HTML::Entities;
 use URI::Escape;
 
+use Dancer::Plugin::Commentary::Auth::Facebook;
 use Dancer::Plugin::Commentary::Auth::Google;
 use Dancer::Plugin::Commentary::Auth::Github;
 use Dancer::Plugin::Commentary::Auth::Twitter;
