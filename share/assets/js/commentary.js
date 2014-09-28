@@ -94,6 +94,15 @@ function start() {
         return;
     }
 
+    // TODO: if (cfg.recaptcha)
+    if (!window.Recaptcha) {
+        getScript('http://www.google.com/recaptcha/api/js/recaptcha_ajax.js',
+            function () {
+                start();
+            });
+        return;
+    }
+
     started = true;
 
     $('head').append(tpl('head'));
@@ -159,12 +168,26 @@ function doComments($parent, comments) {
         });
     }
 
+    // TODO: If cfg.recaptcha
+    Recaptcha.create(cfg.recaptcha.public_key,
+        $('#commentary-new-comment .commentary-comment-captcha')[0],
+        {
+            theme: "red",
+            callback: Recaptcha.focus_response_field
+        }
+    );
+
     $('#commentary-new-comment .commentary-comment-actions-submit').click(function () {
-        $.post(prefix + '/comments',
-            {
-                post_url: contentURL(),
-                body: $('#commentary-new-comment .commentary-comment-body textarea').val(),
-            },
+        var post_data = {
+            post_url: contentURL(),
+            body: $('#commentary-new-comment .commentary-comment-body textarea').val(),
+        };
+
+        // TODO: if (cfg.recaptcha) {
+        post_data['recaptcha_challenge'] = Recaptcha.get_challenge();
+        post_data['recaptcha_response'] = Recaptcha.get_response();
+
+        $.post(prefix + '/comments', post_data,
             function (comment) {
                 $comments.append(
                     $(tpl('comment', {

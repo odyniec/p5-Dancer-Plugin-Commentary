@@ -155,6 +155,17 @@ post '/comments' => sub {
 
     my @errors;
 
+    if ($settings->{recaptcha}) {
+        if (!check_recaptcha(param('recaptcha_challenge'),
+            param('recaptcha_response'), request->address))
+        {
+            push @errors, {
+                code => 'recaptcha.invalid',
+                msg  => 'Recaptcha response invalid', # FIXME: Nicer wording please
+            };
+        }
+    }
+
     # Check if comment body is not empty
     if (param('body') =~ /^$/) {
         push @errors, {
@@ -232,6 +243,23 @@ get '/includes/**' => sub {
     return send_file(path($includes_dir, @$path), system_path => 1);
 };
 
+# TODO: Factor this out of here (into an "addon" submodule maybe?)
+{
+    use Captcha::reCAPTCHA;
+    my $recaptcha = Captcha::reCAPTCHA->new;
+
+    sub check_recaptcha {
+        my ($challenge, $response, $ip_address) = @_;
+
+        my $result = $recaptcha->check_answer(
+            $settings->{recaptcha}{private_key},
+            $ip_address, $challenge, $response
+        );
+
+        return $result->{is_valid};
+    }
+}
+
 # Stole^H^H^H^H^HBorrowed (and adapted) from Dancer::Plugin::EscapeHTML
 {
     my %seen;
@@ -272,6 +300,8 @@ sub js_config {
         },
         display_mode => $settings->{display_mode},
         prefix => $settings->{prefix},
+        # FIXME
+        recaptcha => $settings->{recaptcha},
     };
 
     my $auth_callback_url;
