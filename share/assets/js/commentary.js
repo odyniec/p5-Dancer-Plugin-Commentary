@@ -202,7 +202,7 @@ function doComments($parent, comments) {
         Recaptcha.create(cfg.recaptcha.public_key,
             $('#commentary-new-comment .commentary-comment-captcha')[0],
             {
-                theme: "red",
+                theme: cfg.recaptcha.theme || 'clean',
                 callback: Recaptcha.focus_response_field
             }
         );
