@@ -27,24 +27,6 @@ function addPrerequisite(prerequisite) {
     prerequisites[prerequisites.length] = prerequisite;
 }
 
-function init(jQueryLoading, underscoreLoading) {
-    if (!window.jQuery && !jQueryLoading) {
-        /* No jQuery found -- let's grab it from the CDN */
-        getScript('//code.jquery.com/jquery-1.11.1.min.js', function() {
-            start();
-        });
-        return init(true, underscoreLoading);
-    }
-
-    if (!window._ && !underscoreLoading) {
-        /* Same deal with Underscore.js */
-        getScript('//cdnjs.cloudflare.com/ajax/libs/underscore.js/1.6.0/underscore-min.js', function() {
-            start();
-        });
-        return init(jQueryLoading, true);
-    }
-}
-
 function ago(v, f) {
     v = ~~((Date.now() - v)/1e3);
     var a, b = { second: 60, minute: 60, hour: 24, day: 7, week: 4.35,
