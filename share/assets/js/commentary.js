@@ -185,7 +185,11 @@ function doComments($parent, comments) {
             $('#commentary-new-comment .commentary-comment-captcha')[0],
             {
                 theme: cfg.recaptcha.theme || 'clean',
-                callback: Recaptcha.focus_response_field
+                callback: function () {
+                    /* If in an iframe, adjust size after reCAPTCHA is loaded */
+                    if (window.parent.__commentaryIframeResize)
+                        window.parent.__commentaryIframeResize();
+                }
             }
         );
 
