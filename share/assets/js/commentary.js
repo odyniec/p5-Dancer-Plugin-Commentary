@@ -21,6 +21,12 @@ function getScript(url, success) {
     head.appendChild(script);
 }
 
+var prerequisites = [];
+
+function addPrerequisite(prerequisite) {
+    prerequisites[prerequisites.length] = prerequisite;
+}
+
 function init(jQueryLoading, underscoreLoading) {
     if (!window.jQuery && !jQueryLoading) {
         /* No jQuery found -- let's grab it from the CDN */
@@ -51,12 +57,55 @@ function ago(v, f) {
     }
 }
 
-init();
-
 var cfg = __commentaryCfg,
     started = false,
     prefix = cfg.prefix,
     tplHTML;
+
+/* We need jQuery */
+addPrerequisite({
+    url: '//code.jquery.com/jquery-1.11.1.min.js',
+    success: function () {
+        /* We now have jQuery, let's use its .get method to grab templates */
+        $.get(prefix + '/includes/templates.html',
+            function (html) {
+                tplHTML = html;
+                start();
+            },
+            'html'
+        );
+    },
+    check: function () { return window.jQuery; }
+});
+/* And Underscore.js */
+addPrerequisite({
+    url: '//cdnjs.cloudflare.com/ajax/libs/underscore.js/1.6.0/underscore-min.js',
+    check: function () { return window._; }
+});
+/* We might also need reCAPTCHA */
+if (cfg.recaptcha)
+    addPrerequisite({
+        url: '//www.google.com/recaptcha/api/js/recaptcha_ajax.js',
+        check: function () { return window.Recaptcha; }
+    });
+
+/* Load all prerequisites */
+for (var i = 0; i < prerequisites.length; i++) {
+    getScript(prerequisites[i].url,
+        (function (data) {
+            if (this.success)
+                this.success(data);
+
+            for (var i = 0; i < prerequisites.length; i++) {
+                if (!prerequisites[i].check())
+                    return;
+            }
+
+            /* Yay, all prerequisites loaded -- start up! */
+            start();
+        }).bind(prerequisites[i])
+    );
+}
 
 function tpl(name, data) {
     var $elem;
@@ -79,29 +128,9 @@ function start() {
         /* Already started! */
         return;
 
-    if (!(window.jQuery && window._))
-        /* Sorry, we need jQuery and Underscore to proceed */
+    if (!tplHTML)
+        /* Templates are still loading */
         return;
-
-    if (!tplHTML) {
-        $.get(prefix + '/includes/templates.html',
-            function (html) {
-                tplHTML = html;
-                start();
-            },
-            'html'
-        );
-        return;
-    }
-
-    // TODO: if (cfg.recaptcha)
-    if (!window.Recaptcha) {
-        getScript('http://www.google.com/recaptcha/api/js/recaptcha_ajax.js',
-            function () {
-                start();
-            });
-        return;
-    }
 
     started = true;
 
@@ -168,14 +197,15 @@ function doComments($parent, comments) {
         });
     }
 
-    // TODO: If cfg.recaptcha
-    Recaptcha.create(cfg.recaptcha.public_key,
-        $('#commentary-new-comment .commentary-comment-captcha')[0],
-        {
-            theme: "red",
-            callback: Recaptcha.focus_response_field
-        }
-    );
+    /* Show reCAPTCHA */
+    if (cfg.recaptcha)
+        Recaptcha.create(cfg.recaptcha.public_key,
+            $('#commentary-new-comment .commentary-comment-captcha')[0],
+            {
+                theme: "red",
+                callback: Recaptcha.focus_response_field
+            }
+        );
 
     $('#commentary-new-comment .commentary-comment-actions-submit').click(function () {
         var post_data = {
@@ -183,9 +213,10 @@ function doComments($parent, comments) {
             body: $('#commentary-new-comment .commentary-comment-body textarea').val(),
         };
 
-        // TODO: if (cfg.recaptcha) {
-        post_data['recaptcha_challenge'] = Recaptcha.get_challenge();
-        post_data['recaptcha_response'] = Recaptcha.get_response();
+        if (cfg.recaptcha) {
+            post_data['recaptcha_challenge'] = Recaptcha.get_challenge();
+            post_data['recaptcha_response'] = Recaptcha.get_response();
+        }
 
         $.post(prefix + '/comments', post_data,
             function (comment) {
