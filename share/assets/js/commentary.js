@@ -228,6 +228,10 @@ function doComments($parent, comments) {
                 if (Recaptcha)
                     Recaptcha.reload();
 
+                /* Clear the comment box */
+                $('#commentary-new-comment .commentary-comment-body textarea')
+                    .val('')
+
                 if (window.parent.__commentaryIframeResize)
                     window.parent.__commentaryIframeResize();
             },
@@ -242,9 +246,6 @@ function doComments($parent, comments) {
             );
             quickShow($('.commentary-message'));
         });
-
-        /* Clear the comment box */
-        $('#commentary-new-comment .commentary-comment-body textarea').val('')
     });
 }
 
