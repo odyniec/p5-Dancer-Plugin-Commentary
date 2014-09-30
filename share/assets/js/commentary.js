@@ -224,6 +224,10 @@ function doComments($parent, comments) {
                         ' comment' + ($('.commentary-comments .commentary-comment').length == 1 ? '' : 's')
                 );
 
+                /* Refresh captcha (if shown) */
+                if (Recaptcha)
+                    Recaptcha.reload();
+
                 if (window.parent.__commentaryIframeResize)
                     window.parent.__commentaryIframeResize();
             },
