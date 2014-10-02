@@ -333,6 +333,12 @@ sub js_config {
         push @{$config->{auth}{methods}}, $method_data;
     }
 
+    if (exists $settings->{recaptcha}) {
+        $config->{recaptcha} = { %{$settings->{recaptcha}} };
+        # Do not expose our reCAPTCHA private key
+        delete $config->{recaptcha}{private_key};
+    }
+
     return $config;
 }
 
