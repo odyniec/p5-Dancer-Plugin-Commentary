@@ -98,8 +98,15 @@ sub _dbh {
     }
  
     # Establish a new connection to the database
-    return $self->{_dbh} = DBI->connect($self->{_settings}{dsn},
+    $self->{_dbh} = DBI->connect($self->{_settings}{dsn},
         $self->{_settings}{user}, $self->{_settings}{password});
+
+    if ('mysql' eq lc $self->{_dbh}{Driver}{Name}) {
+        # Automatically re-establish connection if it's lost
+        $self->{_dbh}{mysql_auto_reconnect} = 1;
+    }
+
+    return $self->{_dbh};
 }
 
 sub _quoted_table {
