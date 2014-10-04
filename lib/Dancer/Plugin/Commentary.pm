@@ -155,6 +155,14 @@ post '/comments' => sub {
 
     my @errors;
 
+    # Check if comment body is not empty
+    if (param('body') =~ /^$/) {
+        push @errors, {
+            code    => 'params.body.empty',
+            msg     => 'Comment body cannot be empty',
+        };
+    }
+
     if ($settings->{recaptcha}) {
         if (!check_recaptcha(param('recaptcha_challenge'),
             param('recaptcha_response'), request->address))
@@ -164,14 +172,6 @@ post '/comments' => sub {
                 msg  => 'Recaptcha response invalid', # FIXME: Nicer wording please
             };
         }
-    }
-
-    # Check if comment body is not empty
-    if (param('body') =~ /^$/) {
-        push @errors, {
-            code    => 'params.body.empty',
-            msg     => 'Comment body cannot be empty',
-        };
     }
 
     if (@errors) {
