@@ -155,6 +155,21 @@ post '/comments' => sub {
 
     my @errors;
 
+    if (!%author) {
+        # Not authenticated
+        $author{auth_method} = 'None';
+
+        if (param('name') =~ /\S/) {
+            $author{display_name} = param('name');
+        }
+        else {
+            push @errors, {
+                code => 'params.name.empty',
+                msg  => 'Author name cannot be empty',
+            };
+        }
+    }
+
     # Check if comment body is not empty
     if (param('body') =~ /^$/) {
         push @errors, {
