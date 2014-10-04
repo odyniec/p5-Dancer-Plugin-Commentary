@@ -136,19 +136,19 @@ post '/comments' => sub {
     # FIXME: Move method-specific stuff to Auth modules
     if (session('twitter_user')) {
         $author{auth_method} = 'Twitter';
-        $author{display_name} = session('twitter_user')->{name};
+        $author{name} = session('twitter_user')->{name};
         $author{url} = session('twitter_user')->{url};
         $author{avatar_url} = session('twitter_user')->{profile_image_url};
     }
     elsif (session('github_user')) {
         $author{auth_method} = 'Github';
-        $author{display_name} = session('github_user')->{name};
+        $author{name} = session('github_user')->{name};
         $author{url} = session('github_user')->{html_url};
         $author{avatar_url} = session('github_user')->{avatar_url};
     }
     elsif (session('google_user')) {
         $author{auth_method} = 'Google';
-        $author{display_name} = session('google_user')->{displayName};
+        $author{name} = session('google_user')->{displayName};
         $author{url} = session('google_user')->{url};
         $author{avatar_url} = session('google_user')->{image}{url};
     }
@@ -160,7 +160,7 @@ post '/comments' => sub {
         $author{auth_method} = 'None';
 
         if (param('name') =~ /\S/) {
-            $author{display_name} = param('name');
+            $author{name} = param('name');
         }
         else {
             push @errors, {
