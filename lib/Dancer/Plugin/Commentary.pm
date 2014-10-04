@@ -131,26 +131,26 @@ END
 }
 
 post '/comments' => sub {
-    my $author = {};
+    my %author;
 
     # FIXME: Move method-specific stuff to Auth modules
     if (session('twitter_user')) {
-        $author->{auth_method} = 'Twitter';
-        $author->{display_name} = session('twitter_user')->{name};
-        $author->{url} = session('twitter_user')->{url};
-        $author->{avatar_url} = session('twitter_user')->{profile_image_url};
+        $author{auth_method} = 'Twitter';
+        $author{display_name} = session('twitter_user')->{name};
+        $author{url} = session('twitter_user')->{url};
+        $author{avatar_url} = session('twitter_user')->{profile_image_url};
     }
     elsif (session('github_user')) {
-        $author->{auth_method} = 'Github';
-        $author->{display_name} = session('github_user')->{name};
-        $author->{url} = session('github_user')->{html_url};
-        $author->{avatar_url} = session('github_user')->{avatar_url};
+        $author{auth_method} = 'Github';
+        $author{display_name} = session('github_user')->{name};
+        $author{url} = session('github_user')->{html_url};
+        $author{avatar_url} = session('github_user')->{avatar_url};
     }
     elsif (session('google_user')) {
-        $author->{auth_method} = 'Google';
-        $author->{display_name} = session('google_user')->{displayName};
-        $author->{url} = session('google_user')->{url};
-        $author->{avatar_url} = session('google_user')->{image}{url};
+        $author{auth_method} = 'Google';
+        $author{display_name} = session('google_user')->{displayName};
+        $author{url} = session('google_user')->{url};
+        $author{avatar_url} = session('google_user')->{image}{url};
     }
 
     my @errors;
@@ -183,7 +183,7 @@ post '/comments' => sub {
         timestamp   => time,
         body        => param('body'),
         post_url    => param('post_url'),
-        author      => $author,
+        author      => \%author,
     });
 
     status 'created';
@@ -300,8 +300,6 @@ sub js_config {
         },
         display_mode => $settings->{display_mode},
         prefix => $settings->{prefix},
-        # FIXME
-        recaptcha => $settings->{recaptcha},
     };
 
     my $auth_callback_url;
