@@ -86,7 +86,7 @@ sub method_data {
 
     if (session('google_user')) {
         $data->{authenticated} = 1;
-        $data->{auth_data}{display_name} = session('google_user')->{displayName};
+        $data->{auth_data}{name} = session('google_user')->{displayName};
         $data->{auth_data}{url} = session('google_user')->{url};
         # FIXME: The image might not exist -- check first
         $data->{auth_data}{avatar_url} = session('google_user')->{image}{url};

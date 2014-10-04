@@ -75,7 +75,7 @@ sub method_data {
 
     if (session('twitter_user')) {
         $data->{authenticated} = 1;
-        $data->{auth_data}{display_name} = session('twitter_user')->{name};
+        $data->{auth_data}{name} = session('twitter_user')->{name};
         $data->{auth_data}{url} = session('twitter_user')->{url};
         $data->{auth_data}{avatar_url} =
             session('twitter_user')->{profile_image_url};

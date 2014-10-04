@@ -76,7 +76,7 @@ sub method_data {
 
     if (session('github_user')) {
         $data->{authenticated} = 1;
-        $data->{auth_data}{display_name} = session('github_user')->{name};
+        $data->{auth_data}{name} = session('github_user')->{name};
         $data->{auth_data}{url} = session('github_user')->{html_url};
         $data->{auth_data}{avatar_url} = session('github_user')->{avatar_url};
     }
