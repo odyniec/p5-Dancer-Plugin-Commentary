@@ -24,10 +24,10 @@
                 <span class="commentary-comment-author-name">
                     <% if (comment.author.url) { %>
                         <a href="<%= comment.author.url %>">
-                            <%= comment.author.display_name %>
+                            <%= comment.author.name %>
                         </a>
                     <% } else { %>
-                        <%= comment.author.display_name %>
+                        <%= comment.author.name %>
                     <% } %>
                 </span>
                 <% if (comment.author.auth_method == 'Twitter') { %>
@@ -79,10 +79,10 @@
                     <span class="commentary-comment-author-name">
                         <% if (user.url) { %>
                             <a href="<%= user.url %>">
-                                <%= user.display_name %>
+                                <%= user.name %>
                             </a>
                         <% } else { %>
-                            <%= user.display_name %>
+                            <%= user.name %>
                         <% } %>
                     </span>
                     <% if (user.auth.method == 'Twitter') { %>
@@ -96,12 +96,13 @@
             <% } else { %>
                 <div class="commentary-comment-author">
                     <span class="fa fa-user"></span>
+                    <input type="text" />
                 </div>
             <% } %>
             <div class="commentary-comment-body">
                 <textarea
                     placeholder="Add comment..."
-                    <% if (!(user.auth instanceof Object)) { %>
+                    <% if (0 && !(user.auth instanceof Object)) { %>
                         disabled
                     <% } %>
                     ></textarea>
