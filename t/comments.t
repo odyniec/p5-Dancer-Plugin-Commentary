@@ -41,7 +41,7 @@ my %expected_comment_data = %valid_comment_data;
 $expected_comment_data{author}->{auth_method} = 'None';
 
 $res = dancer_response(POST => '/commentary/comments',
-    { params => \%valid_comment_data });
+    { body => to_json \%valid_comment_data });
 is($res->status, 201, 'Response is "201 Created"');
 is($res->header('location'),
     uri_for('/commentary/comments/1'),
@@ -55,7 +55,7 @@ is_deeply($res_data, \%expected_comment_data,
 # Attempt to post a new comment with empty body
 
 $res = dancer_response(POST => '/commentary/comments', {
-    params => {
+    body => to_json {
         post_url => '/foo.html',
         author => { name => 'Foo' },
         body => ''
@@ -90,7 +90,7 @@ is($res_data->[0]{body}, $valid_comment_data{body},
 # Post a second comment
 
 $res = dancer_response(POST => '/commentary/comments',
-    { params => \%valid_comment_data });
+    { body => to_json \%valid_comment_data });
 is($res->status, 201, 'Response is "201 Created"');
 is($res->header('location'),
     uri_for('/commentary/comments/2'),

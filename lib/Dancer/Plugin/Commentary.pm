@@ -131,6 +131,8 @@ END
 }
 
 post '/comments' => sub {
+    my $comment = from_json(request->body);
+
     my %author;
 
     # FIXME: Move method-specific stuff to Auth modules
@@ -159,19 +161,27 @@ post '/comments' => sub {
         # Not authenticated
         $author{auth_method} = 'None';
 
-        if (param('name') =~ /\S/) {
-            $author{name} = param('name');
+        if (defined $comment->{author}) {
+            if ($comment->{author}{name} =~ /\S/) {
+                $author{name} = $comment->{author}{name};
+            }
+            else {
+                push @errors, {
+                    code => 'params.author.name.empty',
+                    msg  => 'Author name cannot be empty',
+                };
+            }
         }
         else {
             push @errors, {
-                code => 'params.name.empty',
-                msg  => 'Author name cannot be empty',
+                code => 'params.author.missing',
+                msg  => 'Author information must be provided',
             };
         }
     }
 
     # Check if comment body is not empty
-    if (param('body') =~ /^$/) {
+    if ($comment->{body} =~ /^$/) {
         push @errors, {
             code    => 'params.body.empty',
             msg     => 'Comment body cannot be empty',
@@ -179,8 +189,8 @@ post '/comments' => sub {
     }
 
     if ($settings->{recaptcha}) {
-        if (!check_recaptcha(param('recaptcha_challenge'),
-            param('recaptcha_response'), request->address))
+        if (!check_recaptcha($comment->{recaptcha_challenge},
+            $comment->{recaptcha_response}, request->address))
         {
             push @errors, {
                 code => 'recaptcha.invalid',
@@ -196,8 +206,8 @@ post '/comments' => sub {
 
     my $new_comment = $storage->add({
         timestamp   => time,
-        body        => param('body'),
-        post_url    => param('post_url'),
+        body        => $comment->{body},
+        post_url    => $comment->{post_url},
         author      => \%author,
     });
 
