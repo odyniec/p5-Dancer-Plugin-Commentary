@@ -33,27 +33,34 @@ is_deeply($res_data, [], 'An empty list is returned');
 # Post a new comment
 
 my %valid_comment_data = (
-    body        => 'This is a comment',
-    post_url    => '/foo.html',
+    author   => { name => 'Bobby Testington' },
+    body     => 'This is a comment',
+    post_url => '/foo.html',
 );
+my %expected_comment_data = %valid_comment_data;
+$expected_comment_data{author}->{auth_method} = 'None';
 
 $res = dancer_response(POST => '/commentary/comments',
     { params => \%valid_comment_data });
 is($res->status, 201, 'Response is "201 Created"');
 is($res->header('location'),
-    uri_for ('/commentary/comments/1'),
+    uri_for('/commentary/comments/1'),
     'The expected location header is returned');
 $res_data = from_json $res->content;
 is(delete $res_data->{id}, 1, 'Expected ID is returned');
 ok(delete $res_data->{timestamp} <= time, 'Expected timestamp is returned');
-is_deeply(delete $res_data->{author}, {}, 'Author data is empty as expected');
-is_deeply($res_data, \%valid_comment_data,
+is_deeply($res_data, \%expected_comment_data,
     'The remaining data in the response matches what was posted');
 
 # Attempt to post a new comment with empty body
 
-$res = dancer_response(POST => '/commentary/comments',
-    { params => { post_url => '/foo.html', body => '' } });
+$res = dancer_response(POST => '/commentary/comments', {
+    params => {
+        post_url => '/foo.html',
+        author => { name => 'Foo' },
+        body => ''
+    }
+});
 is($res->status, 422, 'Response is "422 Unprocessable Entity"');
 $res_data = from_json $res->content;
 is(scalar @$res_data, 1, 'One error is returned');
@@ -91,8 +98,7 @@ is($res->header('location'),
 $res_data = from_json $res->content;
 is(delete $res_data->{id}, 2, 'Expected ID is returned');
 ok(delete $res_data->{timestamp} <= time, 'Expected timestamp is returned');
-is_deeply(delete $res_data->{author}, {}, 'Author data is empty as expected');
-is_deeply($res_data, \%valid_comment_data,
+is_deeply($res_data, \%expected_comment_data,
     'The remaining data in the response matches what was posted');
 
 # Retrieve the two comments
