@@ -199,6 +199,13 @@ function doComments($parent, comments) {
             body: $('#commentary-new-comment .commentary-comment-body textarea').val(),
         };
 
+        if (!(cfg.user.auth instanceof Object)) {
+            post_data['author'] = {
+                name: $('#commentary-new-comment .commentary-comment-author ' +
+                    'input').val()
+            };
+        }
+
         if (cfg.recaptcha) {
             post_data['recaptcha_challenge'] = Recaptcha.get_challenge();
             post_data['recaptcha_response'] = Recaptcha.get_response();
