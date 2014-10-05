@@ -182,7 +182,7 @@ function doComments($parent, comments) {
     /* Show reCAPTCHA */
     if (cfg.recaptcha)
         Recaptcha.create(cfg.recaptcha.public_key,
-            $('#commentary-new-comment .commentary-comment-captcha')[0],
+            $('#commentary-new-comment-captcha')[0],
             {
                 theme: cfg.recaptcha.theme || 'clean',
                 callback: function () {
