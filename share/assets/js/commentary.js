@@ -204,7 +204,7 @@ function doComments($parent, comments) {
             post_data['recaptcha_response'] = Recaptcha.get_response();
         }
 
-        $.post(prefix + '/comments', post_data,
+        $.post(prefix + '/comments', JSON.stringify(post_data),
             function (comment) {
                 $comments.append(
                     $(tpl('comment', {
