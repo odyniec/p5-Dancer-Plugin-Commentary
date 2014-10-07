@@ -61,6 +61,13 @@ my $storage =
     $Dancer::Plugin::Commentary::Storage::engines{$settings->{storage}}
         ->new($settings->{storage_options} || {});
 
+my $recaptcha;
+if (exists $settings->{recaptcha}) {
+    use Dancer::Plugin::Commentary::Feature::ReCAPTCHA;
+    $recaptcha = Dancer::Plugin::Commentary::Feature::ReCAPTCHA
+        ->new($settings->{recaptcha});
+}
+
 hook 'after_file_render' => \&after_hook;
 hook 'after' => \&after_hook;
 
@@ -189,7 +196,7 @@ post '/comments' => sub {
     }
 
     if ($settings->{recaptcha}) {
-        if (!check_recaptcha($comment->{recaptcha_challenge},
+        if (!$recaptcha->check($comment->{recaptcha_challenge},
             $comment->{recaptcha_response}, request->address))
         {
             push @errors, {
@@ -267,23 +274,6 @@ get '/includes/**' => sub {
 
     return send_file(path($includes_dir, @$path), system_path => 1);
 };
-
-# TODO: Factor this out of here (into an "addon" submodule maybe?)
-{
-    use Captcha::reCAPTCHA;
-    my $recaptcha = Captcha::reCAPTCHA->new;
-
-    sub check_recaptcha {
-        my ($challenge, $response, $ip_address) = @_;
-
-        my $result = $recaptcha->check_answer(
-            $settings->{recaptcha}{private_key},
-            $ip_address, $challenge, $response
-        );
-
-        return $result->{is_valid};
-    }
-}
 
 # Stole^H^H^H^H^HBorrowed (and adapted) from Dancer::Plugin::EscapeHTML
 {
