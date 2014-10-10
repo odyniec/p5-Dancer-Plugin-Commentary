@@ -24,12 +24,10 @@ sub is_spam {
     my ($self, $args) = @_;
 
     my $result = $self->{_akismet}->check(
-        %{
-            map { uc $_ => $args->{$_} }
-                grep { exists $args->{$_} }
-                    qw( comment_author comment_author_email comment_content
-                        comment_user_agent referrer user_ip );
-        }
+        map { uc $_ => $args->{$_} }
+            grep { exists $args->{$_} }
+                qw( comment_author comment_author_email comment_content
+                    comment_user_agent referrer user_ip )
     );
 
     return { true => 1, false => 0 }->{$result};
