@@ -68,6 +68,16 @@ if (exists $settings->{recaptcha}) {
         ->new($settings->{recaptcha});
 }
 
+my $akismet;
+if (exists $settings->{akismet}) {
+    use Dancer::Plugin::Commentary::Feature::Akismet;
+    $akismet = Dancer::Plugin::Commentary::Feature::Akismet->new({
+        # TODO: Set URL to root site URL by default?
+        # url => ""
+        %{$settings->{akismet}},
+    });
+}
+
 hook 'after_file_render' => \&after_hook;
 hook 'after' => \&after_hook;
 
