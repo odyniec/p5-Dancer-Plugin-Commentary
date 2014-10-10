@@ -13,7 +13,7 @@ sub new {
     };
 
     $self->{_akismet} = Net::Akismet->new(
-        KEY => $self->{_settings}{api_key},
+        KEY => $self->{_settings}{key},
         URL => $self->{_settings}{url},
     ); # TODO: Handle errors
 
