@@ -90,6 +90,8 @@ sub after_hook {
     return if exists $response->{_commentary}{done};
     $response->{_commentary}{done} = 1;
 
+    return unless defined $response->content_type;
+
     # Ignore non-HTML content
     return unless exists { map { $_ => 1 }
         qw( application/xhtml+xml text/html ) }
