@@ -30,12 +30,14 @@ sub add {
     my $quoted_table = $self->_quoted_table;
 
     my $sth = $self->_dbh->prepare(qq{
-        INSERT INTO $quoted_table (timestamp, body, post_url, author_json)
-            VALUES (?, ?, ?, ?)
+        INSERT INTO $quoted_table (timestamp, body, post_url, author_json,
+            extra_json)
+            VALUES (?, ?, ?, ?, ?)
     });
  
     $sth->execute(time, $comment->{body}, $comment->{post_url},
-        to_json($comment->{author}, { pretty => 0 }));
+        to_json($comment->{author}, { pretty => 0 }),
+        to_json($comment->{extra}, { pretty => 0 }));
     $self->_dbh->commit() unless $self->_dbh->{AutoCommit};
 
     # FIXME: Handle errors
@@ -75,6 +77,7 @@ sub get {
         post_url    => $_->{post_url},
         body        => $_->{body},
         author      => from_json($_->{author_json}),
+        extra       => from_json($_->{extra_json}),
     } } @{$sth->fetchall_arrayref({})} ];
 }
 
