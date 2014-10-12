@@ -36,6 +36,7 @@ my %valid_comment_data = (
     author   => { name => 'Bobby Testington' },
     body     => 'This is a comment',
     post_url => '/foo.html',
+    extra    => {},
 );
 my %expected_comment_data = %valid_comment_data;
 $expected_comment_data{author}->{auth_method} = 'None';
