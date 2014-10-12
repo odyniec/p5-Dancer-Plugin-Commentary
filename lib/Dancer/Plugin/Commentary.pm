@@ -224,6 +224,17 @@ post '/comments' => sub {
         return to_json \@errors;
     }
 
+    if ($settings->{akismet}) {
+        $extra{akismet}->{spam} = $akismet->is_spam({
+            comment_author     => $comment->{author}{name},
+            # comment_author_email => ,
+            comment_content    => $comment->{body},
+            comment_user_agent => request->user_agent,
+            referrer           => request->referer,
+            user_ip            => request->remote_address,
+        });
+    }
+
     my $new_comment = $storage->add({
         timestamp   => time,
         body        => $comment->{body},
