@@ -152,7 +152,8 @@ END
 post '/comments' => sub {
     my $comment = from_json(request->body);
 
-    my %author;
+    my %author;     # Comment author information
+    my %extra;      # Extra comment data
 
     # FIXME: Move method-specific stuff to Auth modules
     if (session('twitter_user')) {
@@ -228,6 +229,7 @@ post '/comments' => sub {
         body        => $comment->{body},
         post_url    => $comment->{post_url},
         author      => \%author,
+        extra       => \%extra,
     });
 
     status 'created';
