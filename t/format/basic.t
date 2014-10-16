@@ -23,6 +23,6 @@ URL with HTTPS and fragment:
 END
 
 is Dancer::Plugin::Commentary::Format::Basic::to_html($text_urls),
-    $html_urls, '';
+    $html_urls, 'URLs get converted as expected';
 
 done_testing;
