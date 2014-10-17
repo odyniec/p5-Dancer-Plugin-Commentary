@@ -25,4 +25,17 @@ END
 is Dancer::Plugin::Commentary::Format::Basic::to_html($text_urls),
     $html_urls, 'URLs get converted as expected';
 
+my $text_paragraphs = q{
+First paragraph.
+
+Second paragraph.
+
+Third paragraph.
+};
+my $html_paragraphs = '<p>First paragraph.</p>' .
+    "<p>Second paragraph.</p><p>Third paragraph.</p>";
+
+is Dancer::Plugin::Commentary::Format::Basic::to_html($text_paragraphs),
+    $html_paragraphs, 'Paragraphs are created as expected';
+
 done_testing;
