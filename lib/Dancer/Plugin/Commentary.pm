@@ -155,24 +155,11 @@ post '/comments' => sub {
     my %author;     # Comment author information
     my %extra;      # Extra comment data
 
-    # FIXME: Move method-specific stuff to Auth modules
-    if (session('twitter_user')) {
-        $author{auth_method} = 'Twitter';
-        $author{name} = session('twitter_user')->{name};
-        $author{url} = session('twitter_user')->{url};
-        $author{avatar_url} = session('twitter_user')->{profile_image_url};
-    }
-    elsif (session('github_user')) {
-        $author{auth_method} = 'Github';
-        $author{name} = session('github_user')->{name};
-        $author{url} = session('github_user')->{html_url};
-        $author{avatar_url} = session('github_user')->{avatar_url};
-    }
-    elsif (session('google_user')) {
-        $author{auth_method} = 'Google';
-        $author{name} = session('google_user')->{displayName};
-        $author{url} = session('google_user')->{url};
-        $author{avatar_url} = session('google_user')->{image}{url};
+    my $method_data = Dancer::Plugin::Commentary::Auth->current_method_data;
+
+    if ($method_data && $method_data->{authenticated}) {
+        %author = %{ $method_data->{auth_data} };
+        $author{auth_method} = $method_data->{name};
     }
 
     my @errors;
