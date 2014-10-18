@@ -275,6 +275,10 @@ del '/comments/:id' => sub {
         return;
     }
 
+    # TODO: Check if the current user is the comment author or an admin
+
+    # TODO: Either really remove comment or mark it as removed (based on the
+    # configuration)
     if ($storage->remove(param('id'))) {
         status 'no content';
         return;
