@@ -352,11 +352,10 @@ sub js_config {
         my $method_data = $method->method_data($auth_callback_url);
 
         if (!$config->{user}{auth}) {
-            $config->{user}{auth} = $method->auth_data;
-            $config->{user} = encode_data {
-                %{$config->{user}},
-                %{$method_data->{auth_data}}
-            };
+            $config->{user} = encode_data $method_data->{auth_data};
+            if ($method_data->{authenticated}) {
+                $config->{user}{auth} = { method => $method_data->{name} };
+            }
         }
 
         push @{$config->{auth}{methods}}, $method_data;
