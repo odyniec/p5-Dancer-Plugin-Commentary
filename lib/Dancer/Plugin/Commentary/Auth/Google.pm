@@ -61,19 +61,6 @@ sub authentication_url {
     return $uri;
 }
 
-sub auth_data {
-    my ($class) = @_;
-
-    if (session('google_user')) {
-        return {
-            method => 'Google',
-        };
-    }
-    else {
-        return 0;
-    }
-}
-
 sub method_data {
     my ($class, $callback_url) = @_;
 

@@ -51,19 +51,6 @@ sub authentication_url {
                     ($callback_url || uri_escape(request->uri_base . request->uri)));
 }
 
-sub auth_data {
-    my ($class) = @_;
-
-    if (session('github_user')) {
-        return {
-            method => 'Github',
-        };
-    }
-    else {
-        return 0;
-    }
-}
-
 sub method_data {
     my ($class, $callback_url) = @_;
 

@@ -27,19 +27,6 @@ sub authentication_url {
     my ($class, $callback_url) = @_;
 }
 
-sub auth_data {
-    my ($class) = @_;
-
-    if (session('fb_user')) {
-        return {
-            method => 'Facebook',
-        };
-    }
-    else {
-        return 0;
-    }
-}
-
 sub method_data {
     my ($class, $callback_url) = @_;
 

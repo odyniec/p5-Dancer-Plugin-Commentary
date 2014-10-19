@@ -9,8 +9,6 @@ sub init { }
 
 sub authentication_url { }
 
-sub auth_data { }
-
 sub current_method_data {
     my ($class) = @_;
 

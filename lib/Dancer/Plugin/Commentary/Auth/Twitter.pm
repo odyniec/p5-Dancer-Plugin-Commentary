@@ -50,19 +50,6 @@ sub authentication_url {
     return $url;
 }
 
-sub auth_data {
-    my ($class) = @_;
-
-    if (session('twitter_user')) {
-        return {
-            method => 'Twitter',
-        };
-    }
-    else {
-        return 0;
-    }
-}
-
 sub method_data {
     my ($class, $callback_url) = @_;
 
