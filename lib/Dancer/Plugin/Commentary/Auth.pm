@@ -13,6 +13,8 @@ sub current_method_data {
     my ($class) = @_;
 
     for my $method (values %methods) {
+        next if !$method->initialized;
+
         my $method_data = $method->method_data;
 
         if ($method_data->{authenticated}) {

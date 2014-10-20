@@ -11,6 +11,8 @@ use parent 'Dancer::Plugin::Commentary::Auth';
 
 $Dancer::Plugin::Commentary::Auth::methods{twitter} = __PACKAGE__;
 
+our $initialized = 0;
+
 sub init {
     my ($class, $settings) = @_;
 
@@ -30,7 +32,13 @@ sub init {
 
     auth_twitter_init();
 
+    $initialized = 1;
+
     return $class;
+}
+
+sub initialized {
+    return $initialized;
 }
 
 sub authentication_url {

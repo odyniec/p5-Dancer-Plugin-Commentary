@@ -13,6 +13,8 @@ use parent 'Dancer::Plugin::Commentary::Auth';
 
 $Dancer::Plugin::Commentary::Auth::methods{google} = __PACKAGE__;
 
+our $initialized = 0;
+
 my $furl;
 
 sub init {
@@ -42,7 +44,13 @@ sub init {
         },
     );
 
+    $initialized = 1;
+
     return $class;    
+}
+
+sub initialized {
+    return $initialized;
 }
 
 sub authentication_url {

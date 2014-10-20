@@ -10,6 +10,8 @@ use parent 'Dancer::Plugin::Commentary::Auth';
 
 $Dancer::Plugin::Commentary::Auth::methods{facebook} = __PACKAGE__;
 
+our $initialized = 0;
+
 sub init {
     my ($class, $settings) = @_;
 
@@ -20,7 +22,13 @@ sub init {
     warn 'No Dancer::Plugin::Auth::Facebook settings found'
         if !exists config->{plugins}{'Auth::Facebook'};
 
+    $initialized = 1;
+
     return $class;
+}
+
+sub initialized {
+    return $initialized;
 }
 
 sub authentication_url {

@@ -14,6 +14,8 @@ use parent 'Dancer::Plugin::Commentary::Auth';
 
 $Dancer::Plugin::Commentary::Auth::methods{github} = __PACKAGE__;
 
+our $initialized = 0;
+
 my $client_id;
 my $client_secret;
 my $scope;
@@ -35,7 +37,13 @@ sub init {
     $client_secret = config->{plugins}{'Auth::Github'}{client_secret};
     $scope = config->{plugins}{'Auth::Github'}{scope} || '';
 
+    $initialized = 1;
+
     return $class;
+}
+
+sub initialized {
+    return $initialized;
 }
 
 sub authentication_url {
