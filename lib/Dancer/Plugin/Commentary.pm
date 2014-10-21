@@ -152,7 +152,7 @@ END
 post '/comments' => sub {
     my $comment = from_json(request->body);
 
-    my %user = current_user;    # Comment author information
+    my %user = current_user();  # Comment author information
     my %extra;                  # Extra comment data
     my @errors;
 
