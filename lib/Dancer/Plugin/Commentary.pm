@@ -291,6 +291,18 @@ get '/includes/**' => sub {
     return send_file(path($includes_dir, @$path), system_path => 1);
 };
 
+sub current_user {
+    my %user;
+    my $method_data = Dancer::Plugin::Commentary::Auth->current_method_data;
+
+    if ($method_data && $method_data->{authenticated}) {
+        %user = %{ $method_data->{auth_data} };
+        $user{auth_method} = $method_data->{name};
+    }
+
+    return %user;
+}
+
 # Stole^H^H^H^H^HBorrowed (and adapted) from Dancer::Plugin::EscapeHTML
 {
     my %seen;
