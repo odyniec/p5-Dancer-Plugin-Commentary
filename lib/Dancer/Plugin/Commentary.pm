@@ -152,25 +152,17 @@ END
 post '/comments' => sub {
     my $comment = from_json(request->body);
 
-    my %author;     # Comment author information
-    my %extra;      # Extra comment data
-
-    my $method_data = Dancer::Plugin::Commentary::Auth->current_method_data;
-
-    if ($method_data && $method_data->{authenticated}) {
-        %author = %{ $method_data->{auth_data} };
-        $author{auth_method} = $method_data->{name};
-    }
-
+    my %user = current_user;    # Comment author information
+    my %extra;                  # Extra comment data
     my @errors;
 
-    if (!%author) {
+    if (!%user) {
         # Not authenticated
-        $author{auth_method} = 'None';
+        $user{auth_method} = 'None';
 
         if (defined $comment->{author}) {
             if ($comment->{author}{name} =~ /\S/) {
-                $author{name} = $comment->{author}{name};
+                $user{name} = $comment->{author}{name};
             }
             else {
                 push @errors, {
@@ -226,7 +218,7 @@ post '/comments' => sub {
         timestamp   => time,
         body        => $comment->{body},
         post_url    => $comment->{post_url},
-        author      => \%author,
+        author      => \%user,
         extra       => \%extra,
     });
 
