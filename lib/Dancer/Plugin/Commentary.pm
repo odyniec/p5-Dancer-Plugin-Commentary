@@ -254,7 +254,17 @@ del '/comments/:id' => sub {
         return;
     }
 
-    # TODO: Check if the current user is the comment author or an admin
+    # Check if the current user is the comment author or an admin
+    my %user = current_user();
+
+    if (!%user) {
+        # Not authorized
+        status 'unauthorized';
+        return;
+    }
+
+    # TODO: Check if the current user is the comment author
+    # TODO: If not, check if the current user is an admin
 
     # TODO: Either really remove comment or mark it as removed (based on the
     # configuration)
