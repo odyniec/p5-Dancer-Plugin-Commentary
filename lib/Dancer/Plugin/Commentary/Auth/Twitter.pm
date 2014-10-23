@@ -70,6 +70,7 @@ sub method_data {
 
     if (session('twitter_user')) {
         $data->{authenticated} = 1;
+        $data->{auth_data}{unique_id} = session('twitter_user')->{screen_name};
         $data->{auth_data}{name} = session('twitter_user')->{name};
         $data->{auth_data}{url} = session('twitter_user')->{url};
         $data->{auth_data}{avatar_url} =
