@@ -266,6 +266,10 @@ del '/comments/:id' => sub {
     # TODO: Check if the current user is the comment author
     # TODO: If not, check if the current user is an admin
 
+    my $is_author = ($user{auth_method} eq $comment->{author}{auth_method}
+        && $user{unique_id} eq $comment->{author}{unique_id});
+    my $is_admin = exists $admins{"$user{auth_method}:$user{unique_id}"};
+    
     # TODO: Either really remove comment or mark it as removed (based on the
     # configuration)
     if ($storage->remove(param('id'))) {
