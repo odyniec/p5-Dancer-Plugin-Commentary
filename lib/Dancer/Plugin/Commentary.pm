@@ -29,6 +29,7 @@ my $settings = {
     display_mode    => '',
     prefix          => '/commentary',
     storage         => 'memory',
+    admin           => [],
 
     %{ plugin_setting() }
 };
