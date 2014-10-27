@@ -26,9 +26,19 @@ sub initialized {
 sub method_data {
     my ($class) = @_;
 
+    my $data = {
+        name                => 'Test',
+        authenticated       => 0,
+        authentication_url  => '',
+        auth_data           => {},
+    };
+
     if (session('_test_auth_user')) {
-        return session('_test_auth_user');
+        $data->{authenticated} = 1;
+        $data->{auth_data} = session('_test_auth_user');
     }
+
+    return $data;
 }
 
 1;
