@@ -17,6 +17,7 @@ use Dancer::Plugin::Commentary::Auth::Facebook;
 use Dancer::Plugin::Commentary::Auth::Google;
 use Dancer::Plugin::Commentary::Auth::Github;
 use Dancer::Plugin::Commentary::Auth::Twitter;
+use Dancer::Plugin::Commentary::Auth::Test;
 
 use Dancer::Plugin::Commentary::Storage::DBI;
 use Dancer::Plugin::Commentary::Storage::Memory;
