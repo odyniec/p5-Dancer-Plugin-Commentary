@@ -48,6 +48,7 @@ sub get {
                 %{$self->{_comments}{$_}}
             }
         }
+        grep { defined $self->{_comments}{$_} }
         keys %{$self->{_comments}}
     ];
 }
@@ -55,7 +56,8 @@ sub get {
 sub remove {
     my ($self, $id) = @_;
 
-    if (delete $self->{_comments}{$id}) {
+    if (defined $self->{_comments}{$id}) {
+        $self->{_comments}{$id} = undef;
         return 1;
     }
     else {
