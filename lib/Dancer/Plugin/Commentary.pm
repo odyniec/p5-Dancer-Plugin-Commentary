@@ -60,7 +60,7 @@ while (my ($method, $method_settings) = each %{$settings->{auth}{methods}}) {
 }
 
 my %admins = map { $_ => 1 } (
-    ref($settings->{admin}) ? @{$settings->{admin}} : $settings->{admin}
+    ref($settings->{admins}) ? @{$settings->{admins}} : $settings->{admins}
 );
 
 my $storage =
