@@ -255,7 +255,9 @@ post '/search/comments' => sub {
 };
 
 del '/comments/:id' => sub {
-    if (!@{$storage->get({ id => param('id') })}) {
+    my ($comment) = @{$storage->get({ id => param('id') })};
+
+    if (!$comment) {
         status 'not found';
         return;
     }
@@ -268,13 +270,16 @@ del '/comments/:id' => sub {
         status 'unauthorized';
         return;
     }
-
-    # TODO: Check if the current user is the comment author
-    # TODO: If not, check if the current user is an admin
-
+    
     my $is_author = ($user{auth_method} eq $comment->{author}{auth_method}
         && $user{unique_id} eq $comment->{author}{unique_id});
-    my $is_admin = exists $admins{"$user{auth_method}:$user{unique_id}"};
+    my $is_admin = exists $admins{lc($user{auth_method}) . ":$user{unique_id}"};
+
+    if (!$is_author && !$is_admin) {
+        # Not authorized
+        status 'unauthorized';
+        return;
+    }
     
     # TODO: Either really remove comment or mark it as removed (based on the
     # configuration)
@@ -284,8 +289,8 @@ del '/comments/:id' => sub {
     }
     else {
         # TODO: Check last_error, there's a chance that the comment happened to
-        # get deleted after we checked that it exists (a race condition) -- if
-        # that's the case, emit a 404 response.
+        # get deleted after we retrieved it (a race condition) -- if that's the
+        # case, emit a 404 response.
         status 'internal server error';
         return;
     }
