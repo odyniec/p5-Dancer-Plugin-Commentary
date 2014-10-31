@@ -262,16 +262,12 @@ patch '/comments/:id' => sub {
         return;
     }
     
-    my $is_author = ($user{auth_method} eq $comment->{author}{auth_method}
-        && $user{unique_id} eq $comment->{author}{unique_id});
-    my $is_admin = exists $admins{lc($user{auth_method}) . ":$user{unique_id}"};
-
-    if (!$is_author && !$is_admin) {
+    if (!user_is_author(\%user, $comment) && !user_is_admin(\%user)) {
         # Not authorized
         status 'unauthorized';
         return;
     }
-    
+
     # TODO: Authorized to update comment -- validate data and do the update
 };
 
@@ -301,11 +297,7 @@ del '/comments/:id' => sub {
         return;
     }
     
-    my $is_author = ($user{auth_method} eq $comment->{author}{auth_method}
-        && $user{unique_id} eq $comment->{author}{unique_id});
-    my $is_admin = exists $admins{lc($user{auth_method}) . ":$user{unique_id}"};
-
-    if (!$is_author && !$is_admin) {
+    if (!user_is_author(\%user, $comment) && !user_is_admin(\%user)) {
         # Not authorized
         status 'unauthorized';
         return;
@@ -348,6 +340,19 @@ sub current_user {
     }
 
     return %user;
+}
+
+sub user_is_admin {
+    my ($user) = @_;
+
+    return exists $admins{lc($user->{auth_method}) . ":$user->{unique_id}"};
+}
+
+sub user_is_author {
+    my ($user, $comment) = @_;
+
+    return ($user->{auth_method} eq $comment->{author}{auth_method}
+        && $user->{unique_id} eq $comment->{author}{unique_id});
 }
 
 # Stole^H^H^H^H^HBorrowed (and adapted) from Dancer::Plugin::EscapeHTML
