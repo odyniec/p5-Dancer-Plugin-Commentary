@@ -245,6 +245,36 @@ get '/comments/:id' => sub {
     return to_json encode_data $comment;
 };
 
+patch '/comments/:id' => sub {
+    my ($comment) = @{$storage->get({ id => param('id') })};
+
+    if (!$comment) {
+        status 'not found';
+        return;
+    }
+
+    # Check if the current user is the comment author or an admin
+    my %user = current_user();
+
+    if (!%user) {
+        # Not authorized
+        status 'unauthorized';
+        return;
+    }
+    
+    my $is_author = ($user{auth_method} eq $comment->{author}{auth_method}
+        && $user{unique_id} eq $comment->{author}{unique_id});
+    my $is_admin = exists $admins{lc($user{auth_method}) . ":$user{unique_id}"};
+
+    if (!$is_author && !$is_admin) {
+        # Not authorized
+        status 'unauthorized';
+        return;
+    }
+    
+    # TODO: Authorized to update comment -- validate data and do the update
+};
+
 post '/search/comments' => sub {
     my %cond = params('body');
 
