@@ -163,6 +163,8 @@ post '/comments' => sub {
     my @errors;
 
     if (!%user) {
+        # TODO: Check if non-authenticated access is allowed
+
         # Not authenticated
         $user{auth_method} = 'None';
 
