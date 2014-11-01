@@ -187,13 +187,7 @@ post '/comments' => sub {
         }
     }
 
-    # Check if comment body is not empty
-    if ($comment->{body} =~ /^$/) {
-        push @errors, {
-            code    => 'params.body.empty',
-            msg     => 'Comment body cannot be empty',
-        };
-    }
+    push @errors, comment_errors($comment);
 
     if ($settings->{recaptcha}) {
         if (!$recaptcha->check($comment->{recaptcha_challenge},
@@ -355,6 +349,22 @@ sub user_is_author {
 
     return ($user->{auth_method} eq $comment->{author}{auth_method}
         && $user->{unique_id} eq $comment->{author}{unique_id});
+}
+
+sub comment_errors {
+    my ($comment) = @_;
+
+    my @errors;
+
+    # Check if comment body is not empty
+    if ($comment->{body} =~ /^$/) {
+        push @errors, {
+            code => 'params.body.empty',
+            msg  => 'Comment body cannot be empty',
+        };
+    }
+
+    return @errors;
 }
 
 # Stole^H^H^H^H^HBorrowed (and adapted) from Dancer::Plugin::EscapeHTML
