@@ -53,6 +53,23 @@ sub get {
     ];
 }
 
+sub update {
+    my ($self, $comment) = @_;
+
+    if (defined $self->{_comments}{$comment->{id}}) {
+        $self->{_comments}{$comment->{id}} = $comment;
+    }
+    else {
+        $self->{_last_error} = {
+            code => 'storage.memory.comment_not_found',
+            msg => 'Comment not found',
+        };
+        return 0;        
+    }
+
+    return $comment;
+}
+
 sub remove {
     my ($self, $id) = @_;
 
