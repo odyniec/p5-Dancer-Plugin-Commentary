@@ -266,7 +266,22 @@ patch '/comments/:id' => sub {
 
     # TODO: Check if there's a time limit for editing comments
 
-    # TODO: Authorized to update comment -- validate data and do the update
+    $comment = { %$comment, %{ from_json(request->body) } };
+
+    my @errors = comment_errors($comment);
+
+    if (@errors) {
+        status 422;
+        return to_json \@errors;
+    }
+
+    $comment = $storage->update({
+        %{ $comment },
+        timestamp   => time,
+        # TODO: Keep separate timestamps for adding/updating comments
+    });
+
+    return to_json encode_data $comment;
 };
 
 post '/search/comments' => sub {
