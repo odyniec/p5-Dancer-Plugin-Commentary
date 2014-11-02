@@ -12,7 +12,13 @@ use Test::More import => [ '!pass' ];
 
     BEGIN {
         set plugins => {
-            'Commentary' => {}
+            'Commentary' => {
+                auth => {
+                    methods => {
+                        test => {}
+                    }
+                }
+            }
         }
     }
 
@@ -21,6 +27,13 @@ use Test::More import => [ '!pass' ];
 
 my $res;
 my $res_data;
+
+session('_test_auth_user', {
+    unique_id         => 'test',
+    name              => 'Bobby Testington',
+    url               => 'http://foo.bar',
+    profile_image_url => 'http://foo.bar/baz.png',
+});
 
 # Retrieve an empty list of comments
 
@@ -33,13 +46,18 @@ is_deeply($res_data, [], 'An empty list is returned');
 # Post a new comment
 
 my %valid_comment_data = (
-    author   => { name => 'Bobby Testington' },
     body     => 'This is a comment',
     post_url => '/foo.html',
     extra    => {},
 );
-my %expected_comment_data = %valid_comment_data;
-$expected_comment_data{author}->{auth_method} = 'None';
+
+my %expected_comment_data = (
+    %valid_comment_data,
+    author => {
+        auth_method => 'Test',
+        %{ session('_test_auth_user') },
+    }
+);
 
 $res = dancer_response(POST => '/commentary/comments',
     { body => to_json \%valid_comment_data });
