@@ -264,6 +264,8 @@ patch '/comments/:id' => sub {
         return;
     }
 
+    # TODO: Check if there's a time limit for editing comments
+
     # TODO: Authorized to update comment -- validate data and do the update
 };
 
