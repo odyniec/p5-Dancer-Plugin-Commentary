@@ -279,8 +279,7 @@ patch '/comments/:id' => sub {
 
     $comment = $storage->update({
         %{ $comment },
-        timestamp   => time,
-        # TODO: Keep separate timestamps for adding/updating comments
+        updated_timestamp => time,
     });
 
     return to_json encode_data $comment;
