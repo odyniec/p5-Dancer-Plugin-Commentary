@@ -216,12 +216,14 @@ post '/comments' => sub {
         });
     }
 
+    my $time = time;
     my $new_comment = $storage->add({
-        timestamp   => time,
-        body        => $comment->{body},
-        post_url    => $comment->{post_url},
-        author      => \%user,
-        extra       => \%extra,
+        created_timestamp => $time,
+        updated_timestamp => $time,
+        body              => $comment->{body},
+        post_url          => $comment->{post_url},
+        author            => \%user,
+        extra             => \%extra,
     });
 
     status 'created';
