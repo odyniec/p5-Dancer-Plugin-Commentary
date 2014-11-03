@@ -68,7 +68,10 @@ sub {
         'The expected location header is returned');
     $res_data = from_json $res->content;
     is(delete $res_data->{id}, 1, 'Expected ID is returned');
-    ok(delete $res_data->{timestamp} <= time, 'Expected timestamp is returned');
+    ok(delete $res_data->{created_timestamp} <= time,
+        'Expected creation timestamp is returned');
+    ok(delete $res_data->{updated_timestamp} <= time,
+        'Expected update timestamp is returned');
     is_deeply($res_data, \%expected_comment_data,
         'The remaining data in the response matches what was posted');
 };
@@ -145,7 +148,10 @@ sub {
         'The expected location header is returned');
     $res_data = from_json $res->content;
     is(delete $res_data->{id}, 2, 'Expected ID is returned');
-    ok(delete $res_data->{timestamp} <= time, 'Expected timestamp is returned');
+    ok(delete $res_data->{created_timestamp} <= time,
+        'Expected creation timestamp is returned');
+    ok(delete $res_data->{updated_timestamp} <= time,
+        'Expected update timestamp is returned');
     is_deeply($res_data, \%expected_comment_data,
         'The remaining data in the response matches what was posted');
 };
