@@ -184,6 +184,12 @@ sub {
     is($res_data->[0]{id}, 2, 'The returned comment has the expected ID');
 };
 
+subtest 'Attempt to retrieve a removed comment' =>
+sub {
+    $res = dancer_response(GET => '/commentary/comments/1');
+    is($res->status, 404, 'Response is "404 Not Found"');
+};
+
 subtest 'Attempt to remove an already removed comment' =>
 sub {
     $res = dancer_response(DELETE => '/commentary/comments/1');
