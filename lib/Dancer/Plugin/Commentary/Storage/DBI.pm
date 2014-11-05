@@ -30,12 +30,14 @@ sub add {
     my $quoted_table = $self->_quoted_table;
 
     my $sth = $self->_dbh->prepare(qq{
-        INSERT INTO $quoted_table (timestamp, body, post_url, author_json,
-            extra_json)
+        INSERT INTO $quoted_table (created_timestamp, updated_timestamp, body,
+            post_url, author_json, extra_json)
             VALUES (?, ?, ?, ?, ?)
     });
+
+    my $time = time;
  
-    $sth->execute(time, $comment->{body}, $comment->{post_url},
+    $sth->execute($time, $time, $comment->{body}, $comment->{post_url},
         to_json($comment->{author}, { pretty => 0 }),
         to_json($comment->{extra}, { pretty => 0 }));
     $self->_dbh->commit() unless $self->_dbh->{AutoCommit};
