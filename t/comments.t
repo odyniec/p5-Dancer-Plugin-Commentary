@@ -138,6 +138,15 @@ sub {
         'The correct error code is returned');
 };
 
+subtest 'Attempt to update a restricted field' =>
+sub {
+    $res = dancer_response(PATCH => '/commentary/comments/1', {
+        body => to_json { created_timestamp => 123 },
+    });
+    $res_data = from_json $res->content;
+    isnt($res_data->{created_timestamp}, 123, 'The value is not changed');
+};
+
 subtest 'Post a second comment' =>
 sub {
     $res = dancer_response(POST => '/commentary/comments',
