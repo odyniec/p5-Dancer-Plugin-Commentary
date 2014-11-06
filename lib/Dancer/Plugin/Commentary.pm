@@ -266,7 +266,8 @@ patch '/comments/:id' => sub {
         return;
     }
 
-    # TODO: Check if there's a time limit for editing comments
+    # TODO: Check if editing comments is disabled or if there's a time limit for
+    # editing comments
 
     $comment = { %$comment, %{ from_json(request->body) } };
 
