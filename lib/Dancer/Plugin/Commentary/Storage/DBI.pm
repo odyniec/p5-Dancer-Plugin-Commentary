@@ -83,6 +83,30 @@ sub get {
     } } @{$sth->fetchall_arrayref({})} ];
 }
 
+sub update {
+    my ($self, $comment) = @_;
+
+    my $sth = $self->_dbh->prepare(qq{
+        SELECT * FROM $quoted_table
+        WHERE id = ?
+    });
+
+    $sth->execute($comment->{id});
+
+    my $record = $sth->fetchrow_hashref;
+
+    if (!defined $record) {
+        $self->{_last_error} = {
+            code => 'storage.dbi.comment_not_found',
+            msg  => 'Comment not found',
+        };
+    }
+
+    # TODO: Do the update
+
+    
+}
+
 sub _dbh {
     my ($self) = @_;
 
