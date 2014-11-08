@@ -86,6 +86,8 @@ sub get {
 sub update {
     my ($self, $comment) = @_;
 
+    my $quoted_table = $self->_quoted_table;
+
     my $sth = $self->_dbh->prepare(qq{
         SELECT * FROM $quoted_table
         WHERE id = ?
