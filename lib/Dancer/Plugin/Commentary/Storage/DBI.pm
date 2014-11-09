@@ -104,9 +104,21 @@ sub update {
         };
     }
 
-    # TODO: Do the update
+    $sth = $self->_dbh->prepare(qq{
+        UPDATE $quoted_table SET
+            updated_timestamp = ?,
+            body = ?
+            WHERE id = ?
+    });
 
-    
+    my $time = time;
+ 
+    $sth->execute($time, $comment->{body}, $comment->{id});
+    $self->_dbh->commit() unless $self->_dbh->{AutoCommit};
+
+    # FIXME: Handle errors
+
+    return $comment;
 }
 
 sub _dbh {
