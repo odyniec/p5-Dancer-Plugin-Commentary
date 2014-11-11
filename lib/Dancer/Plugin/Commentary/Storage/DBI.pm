@@ -75,11 +75,12 @@ sub get {
     $sth->execute(@where_values);
     
     return [ map { {
-        timestamp   => $_->{timestamp},
-        post_url    => $_->{post_url},
-        body        => $_->{body},
-        author      => from_json($_->{author_json}),
-        extra       => from_json($_->{extra_json}),
+        created_timestamp => $_->{created_timestamp},
+        updated_timestamp => $_->{updated_timestamp},
+        post_url          => $_->{post_url},
+        body              => $_->{body},
+        author            => from_json($_->{author_json}),
+        extra             => from_json($_->{extra_json}),
     } } @{$sth->fetchall_arrayref({})} ];
 }
 
