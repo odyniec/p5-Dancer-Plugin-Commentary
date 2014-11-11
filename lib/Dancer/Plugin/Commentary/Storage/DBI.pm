@@ -27,12 +27,14 @@ sub init {
 sub add {
     my ($self, $comment) = @_;
 
+    my $new_comment = { %$comment };
+
     my $quoted_table = $self->_quoted_table;
 
     my $sth = $self->_dbh->prepare(qq{
         INSERT INTO $quoted_table (created_timestamp, updated_timestamp, body,
             post_url, author_json, extra_json)
-            VALUES (?, ?, ?, ?, ?)
+            VALUES (?, ?, ?, ?, ?, ?)
     });
 
     my $time = time;
@@ -44,9 +46,9 @@ sub add {
 
     # FIXME: Handle errors
 
-    $comment->{id} = $self->_dbh->last_insert_id((undef) x 4);
+    $new_comment->{id} = $self->_dbh->last_insert_id((undef) x 4);
 
-    return $comment;
+    return $new_comment;
 }
 
 sub get {
