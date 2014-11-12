@@ -63,4 +63,11 @@ is(scalar @{all_comments()}, 1, 'There is one record in the comments table');
 cmp_deeply($storage->get({ post_url => $comment_data[0]->{post_url} })->[0],
     superhashof($comment_data[0]), 'The expected comment data is returned');
 
+$storage->add($comment_data[1]);
+
+is(scalar @{all_comments()}, 2, 'There are two records in the comments table');
+cmp_bag($storage->get({ post_url => $comment_data[0]->{post_url} }),
+    [ superhashof($comment_data[0]), superhashof($comment_data[1]) ],
+    'Data for both comments is returned');
+
 done_testing;
