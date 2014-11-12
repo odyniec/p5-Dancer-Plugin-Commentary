@@ -122,6 +122,8 @@ sub update {
 
     # FIXME: Handle errors
 
+    # TODO: Return updated comment data
+
     return $comment;
 }
 
