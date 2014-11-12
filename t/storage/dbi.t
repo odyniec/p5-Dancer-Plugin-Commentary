@@ -5,7 +5,8 @@ use Dancer ':syntax';
 use Dancer::Test;
 use DBI;
 use File::Temp;
-use Test::More import => [ '!pass' ];
+use Test::Deep;
+use Test::More;
 
 my $tmpdb = File::Temp->new(EXLOCK => 0);
 my $dsn = "dbi:SQLite:dbname=" . $tmpdb->filename;
@@ -41,13 +42,25 @@ my $storage = Dancer::Plugin::Commentary::Storage::DBI->new({
 
 is_deeply(all_comments, [], 'Comments table is empty');
 
-$storage->add({
-    post_url => 'http://some.url/post.html',
-    body     => 'Interesting comment',
-    author   => { author_data => { } },
-    extra    => { extra_data => { } },
-});
+my @comment_data = (
+    {
+        post_url => 'http://some.url/post.html',
+        body     => 'Interesting comment',
+        author   => { author_data => { } },
+        extra    => { extra_data => { } },
+    },
+    {
+        post_url => 'http://some.url/post.html',
+        body     => 'Even more interesting comment',
+        author   => { author_data => { } },
+        extra    => { extra_data => { } },
+    },
+);
+
+$storage->add($comment_data[0]);
 
 is(scalar @{all_comments()}, 1, 'There is one record in the comments table');
+cmp_deeply($storage->get({ post_url => $comment_data[0]->{post_url} })->[0],
+    superhashof($comment_data[0]), 'The expected comment data is returned');
 
 done_testing;
