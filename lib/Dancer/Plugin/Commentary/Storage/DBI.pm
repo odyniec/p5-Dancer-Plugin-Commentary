@@ -128,6 +128,38 @@ sub update {
     return $comment;
 }
 
+sub remove {
+    my ($self, $id) = @_;
+
+    my $quoted_table = $self->_quoted_table;
+
+    my $sth = $self->_dbh->prepare(qq{
+        SELECT * FROM $quoted_table
+        WHERE id = ?
+    });
+
+    $sth->execute($id);
+
+    if (!defined $sth->fetchrow_hashref) {
+        $self->{_last_error} = {
+            code => 'storage.dbi.comment_not_found',
+            msg  => 'Comment not found',
+        };
+        return 0;
+    }
+
+    $sth = $self->_dbh->prepare(qq{
+        DELETE FROM $quoted_table WHERE id = ?
+    });
+
+    $sth->execute($id);
+    $self->_dbh->commit() unless $self->_dbh->{AutoCommit};
+
+    # FIXME: Handle errors
+
+    return 1;
+}
+
 sub _dbh {
     my ($self) = @_;
 
