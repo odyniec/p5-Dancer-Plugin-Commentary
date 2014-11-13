@@ -57,17 +57,27 @@ my @comment_data = (
     },
 );
 
-$storage->add($comment_data[0]);
+my $comment1 = $storage->add($comment_data[0]);
 
 is(scalar @{all_comments()}, 1, 'There is one record in the comments table');
 cmp_deeply($storage->get({ post_url => $comment_data[0]->{post_url} })->[0],
     superhashof($comment_data[0]), 'The expected comment data is returned');
 
-$storage->add($comment_data[1]);
+my $comment2 = $storage->add($comment_data[1]);
 
 is(scalar @{all_comments()}, 2, 'There are two records in the comments table');
 cmp_bag($storage->get({ post_url => $comment_data[0]->{post_url} }),
     [ superhashof($comment_data[0]), superhashof($comment_data[1]) ],
     'Data for both comments is returned');
+
+is($storage->remove($comment1->{id}), 1,
+    'First comment is removed successfully');
+is(scalar @{all_comments()}, 1,
+    'There is one record left in the comments table');
+is_deeply($storage->get({ id => $comment1->{id} }), [],
+    'Removed comment data is not returned');
+
+is($storage->remove($comment1->{id}), 0,
+    'Attempting to remove the same comment again fails');
 
 done_testing;
