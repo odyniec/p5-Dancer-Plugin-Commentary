@@ -109,23 +109,32 @@ sub update {
         return 0;
     }
 
+    my $updated_comment = {
+        %$record,
+        %$comment,
+        updated_timestamp => time,
+    };
+
     $sth = $self->_dbh->prepare(qq{
         UPDATE $quoted_table SET
-            updated_timestamp = ?,
-            body = ?
+            author_json       = ?,
+            body              = ?,
+            extra_json        = ?,
+            post_url          = ?,
+            updated_timestamp = ?
             WHERE id = ?
     });
 
-    my $time = time;
- 
-    $sth->execute($time, $comment->{body}, $comment->{id});
+    $sth->execute(to_json($updated_comment->{author}, { pretty => 0 }),
+        $updated_comment->{body},
+        to_json($updated_comment->{extra}, { pretty => 0 }),
+        $updated_comment->{post_url}, $updated_comment->{updated_timestamp},
+        $updated_comment->{id});
     $self->_dbh->commit() unless $self->_dbh->{AutoCommit};
 
     # FIXME: Handle errors
 
-    # TODO: Return updated comment data
-
-    return $comment;
+    return $updated_comment;
 }
 
 sub remove {
