@@ -71,6 +71,16 @@ cmp_bag($storage->get({ post_url => $comment_data[0]->{post_url} }),
     [ superhashof($comment_data[0]), superhashof($comment_data[1]) ],
     'Data for both comments is returned');
 
+# Updated comment data
+$comment_data[1]->{body} = 'I changed my mind';
+$comment_data[1]->{author}{author_data} = { foo => 'bar' };
+
+$comment2 = $storage->update({ id => $comment2->{id}, %{$comment_data[1]} });
+
+cmp_deeply($storage->get({ id => $comment2->{id} })->[0],
+    superhashof($comment_data[1]),
+    'The expected updated comment data is returned');
+
 is($storage->remove($comment1->{id}), 1,
     'First comment is removed successfully');
 is(scalar @{all_comments()}, 1,
