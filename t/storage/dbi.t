@@ -90,5 +90,15 @@ is_deeply($storage->get({ id => $comment1->{id} }), [],
 
 is($storage->remove($comment1->{id}), 0,
     'Attempting to remove the same comment again fails');
+is($storage->last_error->{code}, 'storage.dbi.comment_not_found',
+    'The expected error is reported');
+
+# Make sure last_error will be set again
+$storage->{_last_error} = undef;
+
+is($storage->update($comment1), 0,
+    'Attempting to update a removed comment fails');
+is($storage->last_error->{code}, 'storage.dbi.comment_not_found',
+    'The expected error is reported');
 
 done_testing;
