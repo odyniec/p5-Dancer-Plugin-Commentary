@@ -88,7 +88,7 @@ is(scalar @{all_comments()}, 1,
 is_deeply($storage->get({ id => $comment1->{id} }), [],
     'Removed comment data is not returned');
 
-is($storage->remove($comment1->{id}), 0,
+is($storage->remove($comment1->{id}), undef,
     'Attempting to remove the same comment again fails');
 is($storage->last_error->{code}, 'storage.dbi.comment_not_found',
     'The expected error is reported');
@@ -96,7 +96,7 @@ is($storage->last_error->{code}, 'storage.dbi.comment_not_found',
 # Make sure last_error will be set again
 $storage->{_last_error} = undef;
 
-is($storage->update($comment1), 0,
+is($storage->update($comment1), undef,
     'Attempting to update a removed comment fails');
 is($storage->last_error->{code}, 'storage.dbi.comment_not_found',
     'The expected error is reported');

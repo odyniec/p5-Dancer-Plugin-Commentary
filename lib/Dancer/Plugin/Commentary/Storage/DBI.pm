@@ -106,7 +106,7 @@ sub update {
             code => 'storage.dbi.comment_not_found',
             msg  => 'Comment not found',
         };
-        return 0;
+        return;
     }
 
     my $updated_comment = {
@@ -154,7 +154,7 @@ sub remove {
             code => 'storage.dbi.comment_not_found',
             msg  => 'Comment not found',
         };
-        return 0;
+        return;
     }
 
     $sth = $self->_dbh->prepare(qq{
