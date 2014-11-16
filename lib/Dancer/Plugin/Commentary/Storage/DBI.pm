@@ -37,9 +37,8 @@ sub add {
             VALUES (?, ?, ?, ?, ?, ?)
     });
 
-    my $time = time;
- 
-    $sth->execute($time, $time, $comment->{body}, $comment->{post_url},
+    $sth->execute($comment->{created_timestamp}, $comment->{updated_timestamp},
+        $comment->{body}, $comment->{post_url},
         to_json($comment->{author}, { pretty => 0 }),
         to_json($comment->{extra}, { pretty => 0 }));
     $self->_dbh->commit() unless $self->_dbh->{AutoCommit};
@@ -112,7 +111,6 @@ sub update {
     my $updated_comment = {
         %$record,
         %$comment,
-        updated_timestamp => time,
     };
 
     $sth = $self->_dbh->prepare(qq{
