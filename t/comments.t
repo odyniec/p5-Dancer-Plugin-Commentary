@@ -70,8 +70,8 @@ sub {
     is(delete $res_data->{id}, 1, 'Expected ID is returned');
     ok(delete $res_data->{created_timestamp} <= time,
         'Expected creation timestamp is returned');
-    ok(delete $res_data->{updated_timestamp} <= time,
-        'Expected update timestamp is returned');
+    is(delete $res_data->{updated_timestamp}, undef,
+        'Update timestamp is not defined');
     is_deeply($res_data, \%expected_comment_data,
         'The remaining data in the response matches what was posted');
 };
@@ -124,6 +124,7 @@ sub {
     $res_data = from_json $res->content;
     is($res_data->{body}, 'I changed my mind.',
         'The expected updated comment body is returned');
+    ok(defined $res_data->{updated_timestamp}, 'Update timestamp is defined');
 };
 
 subtest 'Attempt to update with empty body' =>
