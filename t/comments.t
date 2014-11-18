@@ -37,6 +37,13 @@ session('_test_auth_user', {
 
 subtest 'Retrieve an empty list of comments' =>
 sub {
+    $res = dancer_response(GET => '/commentary/comments');
+    is($res->status, 200, 'Response is "200 OK"');
+    is_deeply(from_json($res->content), [], 'An empty list is returned');
+};
+
+subtest 'Search for an empty list of comments' =>
+sub {
     $res = dancer_response(POST => '/commentary/search/comments',
         { post_url => '/foo.html' });
     is($res->status, 200, 'Response is "200 OK"');
@@ -167,6 +174,16 @@ sub {
 };
 
 subtest 'Retrieve the two comments' =>
+sub {
+    $res = dancer_response(GET => '/commentary/comments');
+    is($res->status, 200, 'Response is "200 OK"');
+    $res_data = from_json $res->content;
+    is(scalar @$res_data, 2, 'Two comments are returned');
+    is_deeply([ sort(map { $_->{id} } @$res_data) ], [ 1, 2 ],
+        'The returned comments have the expected IDs');
+};
+
+subtest 'Search for the two comments' =>
 sub {
     $res = dancer_response(POST => '/commentary/search/comments',
         { post_url => '/foo.html' });
