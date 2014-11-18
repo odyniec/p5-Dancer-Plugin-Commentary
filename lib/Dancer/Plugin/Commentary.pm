@@ -232,6 +232,10 @@ post '/comments' => sub {
     return to_json encode_data $new_comment;
 };
 
+get '/comments' => sub {
+    return to_json encode_data $storage->get();
+};
+
 get '/comments/:id' => sub {
     my ($comment) = @{$storage->get({ id => param('id') })};
 
@@ -374,6 +378,8 @@ sub comment_errors {
     my ($comment) = @_;
 
     my @errors;
+
+#    my @read_only_fields = qw(created_timestamp updated_timestamp )
 
     # Check if comment body is not empty
     if ($comment->{body} =~ /^$/) {
