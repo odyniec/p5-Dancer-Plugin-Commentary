@@ -2,8 +2,11 @@ use strict;
 use warnings;
 
 use Dancer ':syntax';
-use Dancer::Test;
+use HTTP::Request::Common qw( GET POST PUT DELETE );
+use Plack::Test;
 use Test::More import => [ '!pass' ];
+
+my $user_data;
 
 {
     package TestApp;
@@ -19,34 +22,40 @@ use Test::More import => [ '!pass' ];
                     }
                 }
             }
-        }
+        };
+        set session => 'simple';
     }
 
     use Dancer::Plugin::Commentary;
+
+    hook before => sub {
+        session('_test_auth_user', $user_data = {
+            unique_id         => 'test',
+            name              => 'Bobby Testington',
+            url               => 'http://foo.bar',
+            profile_image_url => 'http://foo.bar/baz.png',
+        });
+    };
 }
 
 my $res;
 my $res_data;
 
-session('_test_auth_user', {
-    unique_id         => 'test',
-    name              => 'Bobby Testington',
-    url               => 'http://foo.bar',
-    profile_image_url => 'http://foo.bar/baz.png',
-});
-
+my $app  = Dancer::Handler->psgi_app;
+my $test = Plack::Test->create($app);
+ 
 subtest 'Retrieve an empty list of comments' =>
 sub {
-    $res = dancer_response(GET => '/commentary/comments');
-    is($res->status, 200, 'Response is "200 OK"');
+    $res = $test->request(GET '/commentary/comments');
+    is($res->code, 200, 'Response is "200 OK"');
     is_deeply(from_json($res->content), [], 'An empty list is returned');
 };
 
 subtest 'Search for an empty list of comments' =>
 sub {
-    $res = dancer_response(POST => '/commentary/search/comments',
+    $res = $test->request(POST '/commentary/search/comments',
         { post_url => '/foo.html' });
-    is($res->status, 200, 'Response is "200 OK"');
+    is($res->code, 200, 'Response is "200 OK"');
     $res_data = from_json $res->content;
     is_deeply($res_data, [], 'An empty list is returned');
 };
@@ -61,15 +70,15 @@ my %expected_comment_data = (
     %valid_comment_data,
     author => {
         auth_method => 'Test',
-        %{ session('_test_auth_user') },
+        %$user_data,
     }
 );
 
 subtest 'Post a new comment' =>
 sub {
-    $res = dancer_response(POST => '/commentary/comments',
-        { body => to_json \%valid_comment_data });
-    is($res->status, 201, 'Response is "201 Created"');
+    $res = $test->request(POST '/commentary/comments',
+        Content => to_json \%valid_comment_data);
+    is($res->code, 201, 'Response is "201 Created"');
     is($res->header('location'),
         uri_for('/commentary/comments/1'),
         'The expected location header is returned');
@@ -85,14 +94,14 @@ sub {
 
 subtest 'Attempt to post a new comment with empty body' =>
 sub {
-    $res = dancer_response(POST => '/commentary/comments', {
-        body => to_json {
+    $res = $test->request(POST '/commentary/comments',
+        Content => to_json {
             post_url => '/foo.html',
             author => { name => 'Foo' },
             body => ''
         }
-    });
-    is($res->status, 422, 'Response is "422 Unprocessable Entity"');
+    );
+    is($res->code, 422, 'Response is "422 Unprocessable Entity"');
     $res_data = from_json $res->content;
     is(scalar @$res_data, 1, 'One error is returned');
     is($res_data->[0]{code}, 'params.body.empty',
@@ -101,21 +110,21 @@ sub {
 
 subtest 'Retrieve the newly posted comment' =>
 sub {
-    $res = dancer_response(GET => '/commentary/comments/1');
-    is($res->status, 200, 'Response is "200 OK"');
+    $res = $test->request(GET '/commentary/comments/1');
+    is($res->code, 200, 'Response is "200 OK"');
 };
 
 subtest 'Attempt to retrieve a nonexisting comment' =>
 sub {
-    $res = dancer_response(GET => '/commentary/comments/2');
-    is($res->status, 404, 'Response is "404 Not Found"');
+    $res = $test->request(GET '/commentary/comments/2');
+    is($res->code, 404, 'Response is "404 Not Found"');
 };
 
 subtest 'Search for the newly posted comment' =>
 sub {
-    $res = dancer_response(POST => '/commentary/search/comments',
+    $res = $test->request(POST '/commentary/search/comments',
         { post_url => '/foo.html' });
-    is($res->status, 200, 'Response is "200 OK"');
+    is($res->code, 200, 'Response is "200 OK"');
     $res_data = from_json $res->content;
     is(scalar @$res_data, 1, 'One comment is returned');
     is($res_data->[0]{body}, $valid_comment_data{body},
@@ -124,10 +133,14 @@ sub {
 
 subtest 'Update the comment' =>
 sub {
-    $res = dancer_response(PATCH => '/commentary/comments/1', {
-        body => to_json { body => 'I changed my mind.' },
-    });
-    is($res->status, 200, 'Response is "200 OK"');
+    $res = $test->request(
+        HTTP::Request->new(
+            'PATCH', '/commentary/comments/1',
+            [],
+            to_json { body => 'I changed my mind.' }
+        )
+    );
+    is($res->code, 200, 'Response is "200 OK"');
     $res_data = from_json $res->content;
     is($res_data->{body}, 'I changed my mind.',
         'The expected updated comment body is returned');
@@ -136,10 +149,14 @@ sub {
 
 subtest 'Attempt to update with empty body' =>
 sub {
-    $res = dancer_response(PATCH => '/commentary/comments/1', {
-        body => to_json { body => '' },
-    });
-    is($res->status, 422, 'Response is "422 Unprocessable Entity"');
+    $res = $test->request(
+        HTTP::Request->new(
+            'PATCH', '/commentary/comments/1',
+            [],
+            to_json { body => '' }
+        )
+    );
+    is($res->code, 422, 'Response is "422 Unprocessable Entity"');
     $res_data = from_json $res->content;
     is(scalar @$res_data, 1, 'One error is returned');
     is($res_data->[0]{code}, 'params.body.empty',
@@ -148,18 +165,22 @@ sub {
 
 subtest 'Attempt to update a restricted field' =>
 sub {
-    $res = dancer_response(PATCH => '/commentary/comments/1', {
-        body => to_json { created_timestamp => 123 },
-    });
+    $res = $test->request(
+        HTTP::Request->new(
+            'PATCH', '/commentary/comments/1',
+            [],
+            to_json { created_timestamp => 123 }
+        )
+    );
     $res_data = from_json $res->content;
     isnt($res_data->{created_timestamp}, 123, 'The value is not changed');
 };
 
 subtest 'Post a second comment' =>
 sub {
-    $res = dancer_response(POST => '/commentary/comments',
-        { body => to_json \%valid_comment_data });
-    is($res->status, 201, 'Response is "201 Created"');
+    $res = $test->request(POST '/commentary/comments',
+        Content => to_json \%valid_comment_data);
+    is($res->code, 201, 'Response is "201 Created"');
     is($res->header('location'),
         uri_for('/commentary/comments/2'),
         'The expected location header is returned');
@@ -175,8 +196,8 @@ sub {
 
 subtest 'Retrieve the two comments' =>
 sub {
-    $res = dancer_response(GET => '/commentary/comments');
-    is($res->status, 200, 'Response is "200 OK"');
+    $res = $test->request(GET '/commentary/comments');
+    is($res->code, 200, 'Response is "200 OK"');
     $res_data = from_json $res->content;
     is(scalar @$res_data, 2, 'Two comments are returned');
     is_deeply([ sort(map { $_->{id} } @$res_data) ], [ 1, 2 ],
@@ -185,9 +206,9 @@ sub {
 
 subtest 'Search for the two comments' =>
 sub {
-    $res = dancer_response(POST => '/commentary/search/comments',
+    $res = $test->request(POST '/commentary/search/comments',
         { post_url => '/foo.html' });
-    is($res->status, 200, 'Response is "200 OK"');
+    is($res->code, 200, 'Response is "200 OK"');
     $res_data = from_json $res->content;
     is(scalar @$res_data, 2, 'Two comments are returned');
     is_deeply([ sort(map { $_->{id} } @$res_data) ], [ 1, 2 ],
@@ -196,16 +217,16 @@ sub {
 
 subtest 'Remove the first comment' =>
 sub {
-    $res = dancer_response(DELETE => '/commentary/comments/1');
-    is($res->status, 204, 'Response is "204 No Content"');
+    $res = $test->request(DELETE '/commentary/comments/1');
+    is($res->code, 204, 'Response is "204 No Content"');
     is($res->content, '', 'Reponse content is empty');
 };
 
 subtest 'Retrieve comments after one was deleted' =>
 sub {
-    $res = dancer_response(POST => '/commentary/search/comments',
+    $res = $test->request(POST '/commentary/search/comments',
         { post_url => '/foo.html' });
-    is($res->status, 200, 'Response is "200 OK"');
+    is($res->code, 200, 'Response is "200 OK"');
     $res_data = from_json $res->content;
     is(scalar @$res_data, 1, 'One comment is returned');
     is($res_data->[0]{id}, 2, 'The returned comment has the expected ID');
@@ -213,14 +234,14 @@ sub {
 
 subtest 'Attempt to retrieve a removed comment' =>
 sub {
-    $res = dancer_response(GET => '/commentary/comments/1');
-    is($res->status, 404, 'Response is "404 Not Found"');
+    $res = $test->request(GET '/commentary/comments/1');
+    is($res->code, 404, 'Response is "404 Not Found"');
 };
 
 subtest 'Attempt to remove an already removed comment' =>
 sub {
-    $res = dancer_response(DELETE => '/commentary/comments/1');
-    is($res->status, 404, 'Response is "404 Not Found"');
+    $res = $test->request(DELETE '/commentary/comments/1');
+    is($res->code, 404, 'Response is "404 Not Found"');
 };
 
 done_testing;
