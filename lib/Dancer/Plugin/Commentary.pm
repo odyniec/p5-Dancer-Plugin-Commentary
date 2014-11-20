@@ -291,7 +291,7 @@ patch '/comments/:id' => sub {
 };
 
 post '/search/comments' => sub {
-    my %cond = params('body');
+    my %cond = %{ from_json(request->body) };
 
     return to_json encode_data $storage->get({
         map { exists $cond{$_} ? ($_ => $cond{$_}) : () } 

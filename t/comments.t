@@ -54,7 +54,7 @@ sub {
 subtest 'Search for an empty list of comments' =>
 sub {
     $res = $test->request(POST '/commentary/search/comments',
-        { post_url => '/foo.html' });
+        Content => to_json { post_url => '/foo.html' });
     is($res->code, 200, 'Response is "200 OK"');
     $res_data = from_json $res->content;
     is_deeply($res_data, [], 'An empty list is returned');
@@ -123,7 +123,7 @@ sub {
 subtest 'Search for the newly posted comment' =>
 sub {
     $res = $test->request(POST '/commentary/search/comments',
-        { post_url => '/foo.html' });
+        Content => to_json { post_url => '/foo.html' });
     is($res->code, 200, 'Response is "200 OK"');
     $res_data = from_json $res->content;
     is(scalar @$res_data, 1, 'One comment is returned');
@@ -207,7 +207,7 @@ sub {
 subtest 'Search for the two comments' =>
 sub {
     $res = $test->request(POST '/commentary/search/comments',
-        { post_url => '/foo.html' });
+        Content => to_json { post_url => '/foo.html' });
     is($res->code, 200, 'Response is "200 OK"');
     $res_data = from_json $res->content;
     is(scalar @$res_data, 2, 'Two comments are returned');
@@ -225,7 +225,7 @@ sub {
 subtest 'Retrieve comments after one was deleted' =>
 sub {
     $res = $test->request(POST '/commentary/search/comments',
-        { post_url => '/foo.html' });
+        Content => to_json { post_url => '/foo.html' });
     is($res->code, 200, 'Response is "200 OK"');
     $res_data = from_json $res->content;
     is(scalar @$res_data, 1, 'One comment is returned');
