@@ -503,3 +503,17 @@ Configure its settings in the YAML configuration file:
           table: "comments"     # Name of the table to store comments
           user: "user"          # Username to connect to the database
           password: "password"  # Password to connect to the database          
+
+=head1 RESTFUL INTERFACE
+
+=head3 GET /comments
+
+=head3 GET /comments/:id
+
+=head3 POST /comments
+
+=head3 PATCH /comments/:id
+
+=head3 DELETE /comments/:id
+
+=head3 POST /search/comments
