@@ -2,7 +2,8 @@ use strict;
 use warnings;
 
 use Dancer ':syntax';
-use Dancer::Test;
+use HTTP::Request::Common qw( GET POST PUT DELETE );
+use Plack::Test;
 use Test::More import => [ '!pass' ];
 
 {
@@ -15,7 +16,7 @@ use Test::More import => [ '!pass' ];
             'Commentary' => {
                 prefix => '/foo',
             }
-        }
+        };
     }
 
     use Dancer::Plugin::Commentary;
@@ -25,28 +26,22 @@ use Test::More import => [ '!pass' ];
     };
 }
 
-response_status_is(
-    [ POST => '/foo/search/comments' ],
-    200,
-    'Response is "200 OK" for a route with prefix'
-);
+my $res;
 
-response_status_is(
-    [ GET => '/foo/assets/js/commentary.js' ],
-    200,
-    'Response is "200 OK" for an assets route with prefix'
-);
+my $app  = Dancer::Handler->psgi_app;
+my $test = Plack::Test->create($app);
 
-response_status_is(
-    [ GET => '/other' ],
-    200,
-    'Response is "200 OK" for a non-plugin route'
-);
+$res = $test->request(GET '/foo/comments');
+is($res->code, 200, 'Response is "200 OK" for a route with prefix');
 
-response_status_is(
-    [ POST => '/commentary/search/comments' ],
-    404,
-    'Response is "404 Not Found" for a route with the default prefix'
-);
+$res = $test->request(GET '/foo/assets/js/commentary.js');
+is($res->code, 200, 'Response is "200 OK" for an assets route with prefix');
+
+$res = $test->request(GET '/other');
+is($res->code, 200, 'Response is "200 OK" for a non-plugin route');
+
+$res = $test->request(GET '/commentary/comments');
+is($res->code, 404,
+    'Response is "404 Not Found" for a route with the default prefix');
 
 done_testing;
