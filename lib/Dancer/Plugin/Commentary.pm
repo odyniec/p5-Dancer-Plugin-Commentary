@@ -11,13 +11,8 @@ use Dancer ':syntax';
 use Dancer::Plugin;
 use File::ShareDir;
 use HTML::Entities;
+use Module::Load;
 use URI::Escape;
-
-use Dancer::Plugin::Commentary::Auth::Facebook;
-use Dancer::Plugin::Commentary::Auth::Google;
-use Dancer::Plugin::Commentary::Auth::Github;
-use Dancer::Plugin::Commentary::Auth::Twitter;
-use Dancer::Plugin::Commentary::Auth::Test;
 
 use Dancer::Plugin::Commentary::Storage::DBI;
 use Dancer::Plugin::Commentary::Storage::Memory;
@@ -38,16 +33,17 @@ my $settings = {
 sub encode_data;
 sub js_config;
 
-my $previous_prefix = prefix;
-if ($settings->{prefix}) {
-    prefix $settings->{prefix};
-}
+my %auth_modules =  map { lc $_ => "Dancer::Plugin::Commentary::Auth::$_" }
+    qw( Github Google Test Twitter );
 
 my @auth_methods = ();
 
 # Initialize the configured authentication methods
 while (my ($method, $method_settings) = each %{$settings->{auth}{methods}}) {
     $method = lc $method;
+
+    load $auth_modules{$method};
+
     if (exists $Dancer::Plugin::Commentary::Auth::methods{$method}) {
         push @auth_methods,
             $Dancer::Plugin::Commentary::Auth::methods{$method}->init(
@@ -57,6 +53,11 @@ while (my ($method, $method_settings) = each %{$settings->{auth}{methods}}) {
     else {
         # TODO: No corresponding Auth module found, raise error
     }
+}
+
+my $previous_prefix = prefix;
+if ($settings->{prefix}) {
+    prefix $settings->{prefix};
 }
 
 my %admins = map { $_ => 1 } (
