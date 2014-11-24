@@ -32,6 +32,7 @@ my $settings = {
 
 sub encode_data;
 sub js_config;
+sub js_config_iframe;
 
 my %auth_modules =  map { lc $_ => "Dancer::Plugin::Commentary::Auth::$_" }
     qw( Github Google Test Twitter );
