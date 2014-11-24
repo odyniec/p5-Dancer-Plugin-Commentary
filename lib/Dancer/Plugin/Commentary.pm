@@ -120,7 +120,8 @@ sub after_hook {
     {
         if ($content =~ m{</body>}) {
             # Inject JavaScript code to add an iframe
-            my $js = sprintf <<END, (request->uri_base, $settings->{prefix}) x 2;
+            my $js = sprintf <<END, to_json(js_config_iframe, {utf8 => 1}), (request->uri_base, $settings->{prefix}) x 2;
+<script type="text/javascript">var __commentaryCfg = %s;</script>
 <script type="text/javascript">var __commentaryBaseURI = '%s%s';</script>
 <script type="text/javascript" src="%s%s/assets/js/commentary-iframe.js"></script>
 END
@@ -468,6 +469,14 @@ sub js_config {
         # Do not expose our reCAPTCHA private key
         delete $config->{recaptcha}{private_key};
     }
+
+    return $config;
+}
+
+sub js_config_iframe {
+    my $config = {
+        content_selector => $settings->{content_selector},
+    };
 
     return $config;
 }
