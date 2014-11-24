@@ -130,6 +130,7 @@ function start() {
         $parent = (function () {
             /* Jekyll's default layout has a .post inside .site */
             if ($('.site .post').length) return $('.site .post');
+            /* FIXME: Make use of cfg.content_selector */
         })();
     }
 
