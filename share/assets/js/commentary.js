@@ -138,9 +138,9 @@ function start() {
         /* We do have a $parent to attach comments to, so let's get them */
         $.post(
             prefix + '/search/comments',
-            { 
+            JSON.stringify({ 
                 post_url: contentURL()
-            },
+            }),
             function (comments) {
                 doComments($parent, comments);
             },
