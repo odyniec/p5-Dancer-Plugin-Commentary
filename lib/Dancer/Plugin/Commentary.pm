@@ -485,6 +485,8 @@ sub js_config_iframe {
 # Set back the previously set prefix
 prefix $previous_prefix || undef;
 
+register_plugin;
+
 1;
 
 __END__
