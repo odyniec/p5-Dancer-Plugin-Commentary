@@ -7,6 +7,7 @@ use warnings;
 
 # VERSION
 
+use Cwd 'abs_path';
 use Dancer ':syntax';
 use Dancer::Plugin;
 use File::ShareDir;
@@ -17,7 +18,7 @@ use URI::Escape;
 use Dancer::Plugin::Commentary::Storage::DBI;
 use Dancer::Plugin::Commentary::Storage::Memory;
 
-my $dist_dir = File::ShareDir::dist_dir('Dancer-Plugin-Commentary');
+my $dist_dir = abs_path(File::ShareDir::dist_dir('Dancer-Plugin-Commentary'));
 my $assets_dir = path $dist_dir, 'assets';
 my $includes_dir = path $dist_dir, 'includes';
 
