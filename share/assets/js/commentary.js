@@ -99,8 +99,8 @@ function tpl(name, data) {
 }
 
 function prepareComment(comment) {
-    comment.date = (new Date(comment.timestamp * 1000)).toLocaleString();
-    comment.fuzzy_date = ago(comment.timestamp * 1000) + ' ago';
+    comment.date = (new Date(comment.created_timestamp * 1000)).toLocaleString();
+    comment.fuzzy_date = ago(comment.created_timestamp * 1000) + ' ago';
 
     return comment; 
 }
