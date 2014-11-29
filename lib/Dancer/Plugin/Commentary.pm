@@ -15,6 +15,7 @@ use HTML::Entities;
 use Module::Load;
 use URI::Escape;
 
+use Dancer::Plugin::Commentary::Auth;
 use Dancer::Plugin::Commentary::Storage::DBI;
 use Dancer::Plugin::Commentary::Storage::Memory;
 
