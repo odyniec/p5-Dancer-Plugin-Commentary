@@ -57,10 +57,19 @@
             <% } else { %>
                 <% if (auth.methods.length) { %>
                     To add a new comment, sign in with:
-                    <ul>
+                    <ul class="commentary-auth-methods">
                         <% $.each(auth.methods, function (i, method) { %>
                             <li>
-                                <a href="<%= method.authentication_url %>"><%= method.name %></a>
+                                <a href="<%= method.authentication_url %>">
+                                    <% if (method.name == 'Github') { %>
+                                        <span class="commentary-comment-author-auth-method fa fa-github" title="GitHub"></span>
+                                    <% } else if (method.name == 'Google') { %>
+                                        <span class="commentary-comment-author-auth-method fa fa-google" title="Google"></span>
+                                    <% } else if (method.name == 'Twitter') { %>
+                                        <span class="commentary-comment-author-auth-method fa fa-twitter" title="Twitter"></span>
+                                    <% } %>
+                                    <%= method.name %>
+                                </a>
                             </li>
                         <% }) %>
                     </ul>
