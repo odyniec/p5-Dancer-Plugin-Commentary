@@ -479,6 +479,7 @@ sub js_config {
 sub js_config_iframe {
     my $config = {
         content_selector => $settings->{content_selector},
+        enable_selector  => $settings->{enable_selector},
     };
 
     return $config;
