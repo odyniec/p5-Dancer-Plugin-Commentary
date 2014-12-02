@@ -348,6 +348,14 @@ get '/assets/**' => sub {
     return send_file(path($assets_dir, @$path), system_path => 1);
 };
 
+get '/includes/iframe.html' => sub {
+    header 'cache-control' => 'no-cache, no-store, must-revalidate';
+    header 'pragma' => 'no-cache';
+    header 'expires' => 0;
+
+    return pass;
+};
+
 get '/includes/**' => sub {
     my ($path) = splat;
 
