@@ -102,6 +102,9 @@ function prepareComment(comment) {
     comment.date = (new Date(comment.created_timestamp * 1000)).toLocaleString();
     comment.fuzzy_date = ago(comment.created_timestamp * 1000) + ' ago';
 
+    if (comment.fuzzy_date == '0 seconds ago')
+        comment.fuzzy_date = 'just now';
+
     return comment; 
 }
 
