@@ -163,6 +163,12 @@ function doComments($parent, comments) {
     /* Append comments section */
     $comments.appendTo($parent)
 
+    /* Sort comments in chronological order */
+    /* TODO: We might want to do this in the API */
+    comments.sort(function (a, b) {
+        return a.created_timestamp - b.created_timestamp;
+    });
+
     $.each(comments, function (index, comment) {
         $comments.append(tpl('comment', { comment: prepareComment(comment) }));
     });
