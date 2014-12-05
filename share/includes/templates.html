@@ -102,28 +102,30 @@
                         <span class="commentary-comment-author-auth-method fa fa-google" title="Google"></span>
                     <% } %>
                 </div>
-            <% } else { %>
+            <% } else if (non_auth_allowed) { %>
                 <div class="commentary-comment-author">
                     <span class="fa fa-user"></span>
                     <input id="commentary-new-comment-author-name" type="text" />
                 </div>
             <% } %>
-            <div class="commentary-comment-body">
-                <textarea
-                    placeholder="Add comment..."
-                    <% if (0 && !(user.auth instanceof Object)) { %>
-                        disabled
-                    <% } %>
-                    ></textarea>
-            </div>
-            <div id="commentary-new-comment-captcha"></div>
-            <div class="commentary-comment-actions">
-                <button class="commentary-comment-actions-submit"
-                    <% if (!(user.auth instanceof Object)) { %>
-                        disabled
-                    <% } %>
-                    >Add Comment</button>
-            </div>
+            <% if (user.auth instanceof Object || non_auth_allowed) { %>
+                <div class="commentary-comment-body">
+                    <textarea
+                        placeholder="Add comment..."
+                        <% if (!(user.auth instanceof Object)) { %>
+                            disabled
+                        <% } %>
+                        ></textarea>
+                </div>
+                <div id="commentary-new-comment-captcha"></div>
+                <div class="commentary-comment-actions">
+                    <button class="commentary-comment-actions-submit"
+                        <% if (!(user.auth instanceof Object)) { %>
+                            disabled
+                        <% } %>
+                        >Add Comment</button>
+                </div>
+            <% } %>
             <div class="commentary-message-container">
                 <div class="commentary-message" />
             </div>

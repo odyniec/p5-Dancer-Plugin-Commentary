@@ -173,9 +173,28 @@ function doComments($parent, comments) {
         $comments.append(tpl('comment', { comment: prepareComment(comment) }));
     });
 
+    /* Are non-authenticated comments allowed? */
+    var nonAuthAllowed = false;
+
+    $.each(cfg.auth.methods, function (i, method) {
+        if (method.name == 'None') {
+            nonAuthAllowed = true;
+            return false;
+        }
+
+        return true;
+    });
+
     $('.commentary-comments-header', $comments)
-        .after(tpl('new-comment', { user: cfg.user }))
-        .after(tpl('authentication', { auth: cfg.auth, user: cfg.user }));
+        .after(tpl('new-comment', {
+            auth:             cfg.auth,
+            non_auth_allowed: nonAuthAllowed,
+            user:             cfg.user
+        }))
+        .after(tpl('authentication', {
+            auth: cfg.auth,
+            user: cfg.user
+        }));
 
     if (window.parent.__commentaryIframeResize)
         window.parent.__commentaryIframeResize();
