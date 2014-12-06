@@ -225,8 +225,9 @@ post '/comments' => sub {
     my $new_comment = $storage->add({
         created_timestamp => time,
         updated_timestamp => undef,
-        body              => $comment->{body},
         post_url          => $comment->{post_url},
+        format            => $comment->{format} || 'basic',
+        body              => $comment->{body},
         author            => \%user,
         extra             => \%extra,
     });
