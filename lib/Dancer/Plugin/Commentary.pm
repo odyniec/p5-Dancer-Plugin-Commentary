@@ -16,6 +16,7 @@ use Module::Load;
 use URI::Escape;
 
 use Dancer::Plugin::Commentary::Auth;
+use Dancer::Plugin::Commentary::Format::Basic;
 use Dancer::Plugin::Commentary::Storage::DBI;
 use Dancer::Plugin::Commentary::Storage::Memory;
 
@@ -222,12 +223,18 @@ post '/comments' => sub {
         });
     }
 
+    # TODO: Do not use the hardcoded basic format
+    $comment->{body_html} =
+        Dancer::Plugin::Commentary::Format::Basic::to_html($comment->{body});
+
     my $new_comment = $storage->add({
         created_timestamp => time,
         updated_timestamp => undef,
         post_url          => $comment->{post_url},
+        # TODO: Check if the format is actually supported/recognized
         format            => $comment->{format} || 'basic',
         body              => $comment->{body},
+        body_html         => $comment->{body_html},
         author            => \%user,
         extra             => \%extra,
     });
