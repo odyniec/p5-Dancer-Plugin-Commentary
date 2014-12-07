@@ -306,10 +306,14 @@ patch '/comments/:id' => sub {
 post '/search/comments' => sub {
     my %cond = %{ from_json(request->body) };
 
-    return to_json encode_data $storage->get({
-        map { exists $cond{$_} ? ($_ => $cond{$_}) : () } 
-            qw( id post_url )
-    });
+    return to_json [
+        map { encode_comment($_) } @{
+            $storage->get({
+                map { exists $cond{$_} ? ($_ => $cond{$_}) : () } 
+                    qw( id post_url )
+            })
+        }
+    ];
 };
 
 del '/comments/:id' => sub {
