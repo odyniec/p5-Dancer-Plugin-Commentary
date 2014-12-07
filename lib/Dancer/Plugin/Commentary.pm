@@ -413,6 +413,16 @@ sub comment_errors {
     return @errors;
 }
 
+sub encode_comment {
+    my ($comment) = @_;
+
+    my $body_html = delete $comment->{body_html};
+    my $encoded_comment = encode_data($comment);
+    $encoded_comment->{body_html} = $body_html;
+
+    return $encoded_comment;
+}
+
 # Stole^H^H^H^H^HBorrowed (and adapted) from Dancer::Plugin::EscapeHTML
 {
     my %seen;
