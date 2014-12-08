@@ -242,7 +242,7 @@ post '/comments' => sub {
     status 'created';
     header location => uri_for($settings->{prefix} . '/comments/' .
         $new_comment->{id});
-    return to_json encode_data $new_comment;
+    return to_json encode_comment($new_comment);
 };
 
 get '/comments' => sub {
