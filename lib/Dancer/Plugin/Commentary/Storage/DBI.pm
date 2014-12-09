@@ -31,16 +31,34 @@ sub add {
 
     my $quoted_table = $self->_quoted_table;
 
+    my @comment_fields = qw(
+        author_json
+        body
+        body_html
+        created_timestamp
+        extra_json
+        format
+        post_url
+        updated_timestamp
+    );
+    my $field_names = join ',', @comment_fields;
+    my $placeholders = join ',', ('?') x ($#comment_fields + 1);
+
     my $sth = $self->_dbh->prepare(qq{
-        INSERT INTO $quoted_table (created_timestamp, updated_timestamp, body,
-            post_url, author_json, extra_json)
-            VALUES (?, ?, ?, ?, ?, ?)
+        INSERT INTO $quoted_table ($field_names) VALUES ($placeholders)
     });
 
-    $sth->execute($comment->{created_timestamp}, $comment->{updated_timestamp},
-        $comment->{body}, $comment->{post_url},
-        to_json($comment->{author}, { pretty => 0 }),
-        to_json($comment->{extra}, { pretty => 0 }));
+    my @comment_data = map {
+        if ($_ =~ /^(.*?)_json$/) {
+            # JSON data field
+            to_json($comment->{$1}, { pretty => 0 });
+        }
+        else {
+            $comment->{$_};
+        }
+    } @comment_fields;
+
+    $sth->execute(@comment_data);
     $self->_dbh->commit() unless $self->_dbh->{AutoCommit};
 
     # FIXME: Handle errors
