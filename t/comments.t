@@ -6,6 +6,8 @@ use HTTP::Request::Common qw( GET POST PUT DELETE );
 use Plack::Test;
 use Test::More import => [ '!pass' ];
 
+use Dancer::Plugin::Commentary::Format::Basic;
+
 my $user_data;
 
 {
@@ -62,8 +64,9 @@ sub {
 
 my %valid_comment_data = (
     body     => 'This is a comment',
-    post_url => '/foo.html',
     extra    => {},
+    format   => 'basic',
+    post_url => '/foo.html',
 );
 
 my %expected_comment_data = (
@@ -71,7 +74,9 @@ my %expected_comment_data = (
     author => {
         auth_method => 'Test',
         %$user_data,
-    }
+    },
+    body_html => Dancer::Plugin::Commentary::Format::Basic::to_html(
+        $valid_comment_data{body}),
 );
 
 subtest 'Post a new comment' =>
