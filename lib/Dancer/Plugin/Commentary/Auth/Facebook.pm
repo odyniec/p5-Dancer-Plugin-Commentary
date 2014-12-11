@@ -63,6 +63,18 @@ sub method_data {
         auth_data           => {},
     };
 
+    if (session('fb_user')) {
+        $data->{authenticated} = 1;
+        $data->{auth_data}{name} = session('fb_user')->{name};
+        $data->{auth_data}{url} = session('fb_user')->{link};
+        $data->{auth_data}{avatar_url} = 'http://graph.facebook.com/' .
+            session('fb_user')->{id} . '/picture';
+    }
+    else {
+        $data->{authentication_url} = '' .
+            $class->authentication_url($callback_url);
+    }
+
     return $data;
 }
 
