@@ -26,6 +26,13 @@ sub init {
     warn 'No Dancer::Plugin::Auth::Facebook settings found'
         if !exists config->{plugins}{'Auth::Facebook'};
 
+    if (!exists config->{plugins}{'Auth::Facebook'}{callback_url}) {
+        config->{plugins}{'Auth::Facebook'}{callback_url} =
+            '//' . config->{server} . 
+                (config->{port} != 80 ? ':' . config->{port} : '') .
+                '/commentary/auth/facebook/callback';
+    }
+
     auth_fb_init;
 
     $application_id = config->{plugins}{'Auth::Facebook'}{application_id};
