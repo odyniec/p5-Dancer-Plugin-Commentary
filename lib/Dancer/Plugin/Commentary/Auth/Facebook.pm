@@ -30,7 +30,7 @@ sub init {
 
     $application_id = config->{plugins}{'Auth::Facebook'}{application_id};
     $application_secret =
-        config->plugins}{'Auth::Facebook'}{application_secret};
+        config->{plugins}{'Auth::Facebook'}{application_secret};
     $scope = config->{plugins}{'Auth::Facebook'}{scope} || '';
 
     $initialized = 1;
