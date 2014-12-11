@@ -12,6 +12,10 @@ $Dancer::Plugin::Commentary::Auth::methods{facebook} = __PACKAGE__;
 
 our $initialized = 0;
 
+my $application_id;
+my $application_secret;
+my $scope;
+
 sub init {
     my ($class, $settings) = @_;
 
@@ -21,6 +25,13 @@ sub init {
 
     warn 'No Dancer::Plugin::Auth::Facebook settings found'
         if !exists config->{plugins}{'Auth::Facebook'};
+
+    auth_fb_init;
+
+    $application_id = config->{plugins}{'Auth::Facebook'}{application_id};
+    $application_secret =
+        config->plugins}{'Auth::Facebook'}{application_secret};
+    $scope = config->{plugins}{'Auth::Facebook'}{scope} || '';
 
     $initialized = 1;
 
