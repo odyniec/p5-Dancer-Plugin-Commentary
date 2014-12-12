@@ -5,6 +5,8 @@ use warnings;
 
 use Dancer ':syntax';
 use Dancer::Plugin::Auth::Facebook;
+use Net::Facebook::Oauth2;
+use URI::Escape;
 
 use parent 'Dancer::Plugin::Commentary::Auth';
 
@@ -51,6 +53,25 @@ sub initialized {
 
 sub authentication_url {
     my ($class, $callback_url) = @_;
+
+    my $uri_base = request->uri_base;
+
+    # FIXME: Scheme sometimes mysteriously disappears from the request object?
+    if ($uri_base !~ qr{^ \w+ :// }x) {
+        $uri_base =~ s{^ :?/* }{}x;
+        $uri_base = (request->scheme || 'http') . '://' . $uri_base;
+    }
+
+    my $url = facebook->get_authorization_url(
+        'callback' => $uri_base .
+            '/commentary/auth/facebook/callback?callback=' .
+                #($callback_url || uri_escape(request->uri_base . request->uri))
+                uri_escape($callback_url || request->uri_base . request->uri)
+    );
+
+    session fb_access_token => '';
+
+    return $url;
 }
 
 sub method_data {
