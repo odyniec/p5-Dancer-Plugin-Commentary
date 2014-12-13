@@ -38,7 +38,7 @@ sub js_config;
 sub js_config_iframe;
 
 my %auth_modules =  map { lc $_ => "Dancer::Plugin::Commentary::Auth::$_" }
-    qw( Github Google Test Twitter );
+    qw( Facebook Github Google Test Twitter );
 
 my @auth_methods = ();
 
