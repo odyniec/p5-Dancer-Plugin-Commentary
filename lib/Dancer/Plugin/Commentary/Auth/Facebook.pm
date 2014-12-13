@@ -99,4 +99,29 @@ sub method_data {
     return $data;
 }
 
+get '/commentary/auth/facebook/callback' => sub {
+    my $cb_fail = config->{plugins}{'Auth::Facebook'}{callback_fail};
+    
+    return redirect $cb_fail if (params->{'error'});
+ 
+    my $access_token = session('fb_access_token');
+ 
+    if (!$access_token) {
+        $access_token = facebook->get_access_token(code => params->{'code'});
+        return $cb_fail if !$access_token;
+        session fb_access_token => $access_token;
+    }
+ 
+    my $fb = Net::Facebook::Oauth2->new(
+        access_token => $access_token,
+    );
+ 
+    my $me = $fb->get('https://graph.facebook.com/me');
+ 
+    session fb_user => $me->as_hash;
+ 
+    redirect params('query')->{callback} ||
+        config->{plugins}{'Auth::Facebook'}{callback_success};
+};
+
 1;
