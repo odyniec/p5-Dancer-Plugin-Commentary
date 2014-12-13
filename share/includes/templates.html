@@ -61,7 +61,9 @@
                         <% $.each(auth.methods, function (i, method) { %>
                             <li>
                                 <a href="<%= method.authentication_url %>">
-                                    <% if (method.name == 'Github') { %>
+                                    <% if (method.name == 'Facebook') { %>
+                                        <span class="commentary-comment-author-auth-method fa fa-facebook" title="Facebook"></span>
+                                    <% } else if (method.name == 'Github') { %>
                                         <span class="commentary-comment-author-auth-method fa fa-github" title="GitHub"></span>
                                     <% } else if (method.name == 'Google') { %>
                                         <span class="commentary-comment-author-auth-method fa fa-google" title="Google"></span>
