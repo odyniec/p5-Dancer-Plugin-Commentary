@@ -257,7 +257,7 @@ get '/comments/:id' => sub {
         return;
     }
 
-    return to_json encode_comment($new_comment);
+    return to_json encode_comment($comment);
 };
 
 patch '/comments/:id' => sub {
