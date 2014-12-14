@@ -246,7 +246,9 @@ post '/comments' => sub {
 };
 
 get '/comments' => sub {
-    return to_json encode_data $storage->get();
+    return to_json [
+        map { encode_comment($_) } @{ $storage->get() }
+    ];
 };
 
 get '/comments/:id' => sub {
