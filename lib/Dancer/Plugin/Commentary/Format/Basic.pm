@@ -22,6 +22,9 @@ sub to_html {
     $text =~ s{\n\n}{</p><p>}gs;
     $text = "<p>$text</p>";
 
+    # Replace single line breaks with <br>s
+    $text =~ s{\n}{<br/>}gs;
+
     return $text;
 }
 
