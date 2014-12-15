@@ -65,7 +65,6 @@ sub authentication_url {
     my $url = facebook->get_authorization_url(
         'callback' => $uri_base .
             '/commentary/auth/facebook/callback?callback=' .
-                #($callback_url || uri_escape(request->uri_base . request->uri))
                 uri_escape($callback_url || request->uri_base . request->uri)
     );
 
