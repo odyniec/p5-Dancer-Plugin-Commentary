@@ -23,12 +23,14 @@ sub all_comments {
 $dbh->do(qq{
     CREATE TABLE comments (
         id                INTEGER PRIMARY KEY,
-        created_timestamp BIGINT,
-        updated_timestamp BIGINT,
-        body              TEXT,
-        post_url          TEXT,
         author_json       TEXT,
-        extra_json        TEXT
+        body              TEXT,
+        body_html         TEXT,
+        created_timestamp BIGINT,
+        extra_json        TEXT,
+        format            VARCHAR(30),
+        post_url          TEXT,
+        updated_timestamp BIGINT
     );
 });
 
