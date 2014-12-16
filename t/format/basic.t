@@ -14,14 +14,14 @@ URL with HTTPS and fragment:
 https://url.with/#fragment
 };
 my $html_urls = q{
-<p>Perl:
-<a href="http://perl.org/">http://perl.org/</a>
-Perl Dancer:
-<a href="http://perldancer.org/">http://perldancer.org/</a>
-URL with HTTPS and fragment:
+<p>Perl:<br/>
+<a href="http://perl.org/">http://perl.org/</a><br/>
+Perl Dancer:<br/>
+<a href="http://perldancer.org/">http://perldancer.org/</a><br/>
+URL with HTTPS and fragment:<br/>
 <a href="https://url.with/#fragment">https://url.with/#fragment</a></p>
 };
-$html_urls =~ s{^\s+|\s+$}{}gs;
+$html_urls =~ s{^\s+|\s+$|\n}{}gs;
 
 is Dancer::Plugin::Commentary::Format::Basic::to_html($text_urls),
     $html_urls, 'URLs get converted as expected';
