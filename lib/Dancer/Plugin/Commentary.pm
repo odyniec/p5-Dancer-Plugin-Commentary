@@ -25,10 +25,11 @@ my $assets_dir = path $dist_dir, 'assets';
 my $includes_dir = path $dist_dir, 'includes';
 
 my $settings = {
+    admin           => [],
+    delete_policy   => 'delete',
     display_mode    => '',
     prefix          => '/commentary',
     storage         => 'memory',
-    admin           => [],
 
     %{ plugin_setting() }
 };
