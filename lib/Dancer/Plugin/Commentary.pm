@@ -342,18 +342,21 @@ del '/comments/:id' => sub {
         return;
     }
     
-    # TODO: Either really remove comment or mark it as removed (based on the
-    # configuration)
-    if ($storage->remove(param('id'))) {
-        status 'no content';
-        return;
+    if ($settings->{delete_policy} eq 'hide') {
+        # TODO: Set hidden/deleted flag
     }
     else {
-        # TODO: Check last_error, there's a chance that the comment happened to
-        # get deleted after we retrieved it (a race condition) -- if that's the
-        # case, emit a 404 response.
-        status 'internal server error';
-        return;
+        if ($storage->remove(param('id'))) {
+            status 'no content';
+            return;
+        }
+        else {
+            # TODO: Check last_error, there's a chance that the comment happened
+            # to get deleted after we retrieved it (a race condition) -- if
+            # that's the case, emit a 404 response.
+            status 'internal server error';
+            return;
+        }
     }
 };
 
