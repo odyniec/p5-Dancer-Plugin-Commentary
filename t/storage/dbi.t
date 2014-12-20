@@ -27,7 +27,7 @@ $dbh->do(qq{
         body              TEXT,
         body_html         TEXT,
         created_timestamp BIGINT,
-        deleted           TINYINT(1) NOT NULL DEFAULT 0,
+        deleted           INTEGER,
         extra_json        TEXT,
         format            VARCHAR(30),
         post_url          TEXT,
