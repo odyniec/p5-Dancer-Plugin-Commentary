@@ -105,6 +105,7 @@ sub get {
         updated_timestamp => $_->{updated_timestamp},
         post_url          => $_->{post_url},
         body              => $_->{body},
+        body_html         => $_->{body_html},
         author            => from_json($_->{author_json}),
         extra             => from_json($_->{extra_json}),
     } } @{$sth->fetchall_arrayref({})} ];
