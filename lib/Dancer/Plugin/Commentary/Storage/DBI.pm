@@ -101,13 +101,13 @@ sub get {
     
     return [ map { {
         id                => $_->{id},
-        created_timestamp => $_->{created_timestamp},
-        updated_timestamp => $_->{updated_timestamp},
-        post_url          => $_->{post_url},
+        author            => from_json($_->{author_json}),
         body              => $_->{body},
         body_html         => $_->{body_html},
-        author            => from_json($_->{author_json}),
+        created_timestamp => $_->{created_timestamp},
         extra             => from_json($_->{extra_json}),
+        post_url          => $_->{post_url},
+        updated_timestamp => $_->{updated_timestamp},
     } } @{$sth->fetchall_arrayref({})} ];
 }
 
