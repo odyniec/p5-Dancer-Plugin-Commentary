@@ -293,10 +293,7 @@ function quickShow(element) {
     return $(element).animate(
         {
             height: 'show',
-            marginBottom: 'show',
-            marginLeft: 'show',
-            marginRight: 'show',
-            marginTop: 'show',
+            margin: 'show',
         },
         {
             duration: 'fast',
@@ -313,10 +310,7 @@ function quickShow(element) {
                     quickShowTimers[element] = setTimeout(function () {
                         $('.commentary-message').animate({
                                 height: 'hide',
-                                marginBottom: 'hide',
-                                marginLeft: 'hide',
-                                marginRight: 'hide',
-                                marginTop: 'hide',
+                                margin: 'hide',
                             },
                             {
                                 duration: 'fast',
