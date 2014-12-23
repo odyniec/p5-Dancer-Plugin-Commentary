@@ -71,13 +71,15 @@ sub add {
 sub get {
     my ($self, $cond) = @_;
 
+    $cond //= {};
+
     my $where_sql = '';
     my @where_fields;
     my @where_values;
 
     # If there's no condition for the "deleted" field, assume comments with the
     # deleted flag set aren't supposed to be returned.
-    if (!%$cond || !exists $cond->{deleted}) {
+    if (!exists $cond->{deleted}) {
         $cond->{deleted} = 0;
     }
 
