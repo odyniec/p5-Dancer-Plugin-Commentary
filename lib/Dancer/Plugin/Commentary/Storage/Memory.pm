@@ -22,6 +22,10 @@ sub init { }
 sub add {
     my ($self, $comment) = @_;
 
+    if (!exists $comment->{deleted}) {
+        $comment->{deleted} = 0;
+    }
+
     $self->{_comments}{my $id = 1 + keys %{$self->{_comments}}} = $comment;
 
     return {
@@ -65,6 +69,10 @@ sub update {
     my ($self, $comment) = @_;
 
     if (defined $self->{_comments}{$comment->{id}}) {
+        if (!exists $comment->{deleted}) {
+            $comment->{deleted} = 0;
+        }
+
         $self->{_comments}{$comment->{id}} = $comment;
     }
     else {
@@ -72,7 +80,7 @@ sub update {
             code => 'storage.memory.comment_not_found',
             msg => 'Comment not found',
         };
-        return;        
+        return;
     }
 
     return $comment;
