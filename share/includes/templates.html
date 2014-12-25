@@ -102,6 +102,8 @@
                         <span class="commentary-comment-author-auth-method fa fa-github" title="GitHub"></span>
                     <% } else if (user.auth.method == 'Google') { %>
                         <span class="commentary-comment-author-auth-method fa fa-google" title="Google"></span>
+                    <% } else if (user.auth.method == 'Facebook') { %>
+                        <span class="commentary-comment-author-auth-method fa fa-facebook" title="Facebook"></span>
                     <% } %>
                 </div>
             <% } else if (non_auth_allowed) { %>
