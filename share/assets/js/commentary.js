@@ -283,6 +283,14 @@ function doComments($parent, comments) {
             quickShow($('.commentary-message'));
         });
     });
+
+    $('#commentary-new-comment .commentary-comment-body textarea')
+        .on('change keyup paste',
+            function() {
+                $('#commentary-new-comment .commentary-comment-actions-submit')
+                    .prop('disabled', !$(this).val().match(/\S/));
+            }
+        );
 }
 
 var quickShowTimers = {};
