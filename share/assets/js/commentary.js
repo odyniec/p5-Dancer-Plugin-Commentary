@@ -261,7 +261,7 @@ function doComments($parent, comments) {
                 );
 
                 /* Refresh captcha (if shown) */
-                if (Recaptcha)
+                if (window.Recaptcha)
                     Recaptcha.reload();
 
                 /* Clear the comment box */
