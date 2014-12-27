@@ -291,6 +291,9 @@ function doComments($parent, comments) {
                     .prop('disabled', !$(this).val().match(/\S/));
             }
         );
+
+    $('#commentary-new-comment .commentary-comment-actions-submit')
+        .prop('disabled', true);
 }
 
 var quickShowTimers = {};
