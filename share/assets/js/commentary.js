@@ -267,6 +267,9 @@ function doComments($parent, comments) {
                 /* Clear the comment box */
                 $('#commentary-new-comment .commentary-comment-body textarea')
                     .val('')
+                /* Disable the "Add Comment" button */
+                $('#commentary-new-comment .commentary-comment-actions-submit')
+                    .prop('disabled', true);
 
                 if (window.parent.__commentaryIframeResize)
                     window.parent.__commentaryIframeResize();
