@@ -47,16 +47,6 @@ var cfg = __commentaryCfg,
 /* We need jQuery */
 addPrerequisite({
     url: '//code.jquery.com/jquery-1.11.1.min.js',
-    success: function () {
-        /* We now have jQuery, let's use its .get method to grab templates */
-        $.get(prefix + '/includes/templates.html',
-            function (html) {
-                tplHTML = html;
-                start();
-            },
-            'html'
-        );
-    },
     check: function () { return window.jQuery; }
 });
 /* And Underscore.js */
@@ -113,9 +103,18 @@ function start() {
         /* Already started! */
         return;
 
-    if (!tplHTML)
-        /* Templates are still loading */
+    if (!tplHTML) {
+        /* Need to load templates */
+        $.get(prefix + '/includes/templates.html',
+            function (html) {
+                tplHTML = html;
+                start();
+            },
+            'html'
+        );
+
         return;
+    }
 
     started = true;
 
