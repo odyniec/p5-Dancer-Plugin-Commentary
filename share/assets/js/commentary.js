@@ -286,6 +286,8 @@ function doComments($parent, comments) {
         });
     });
 
+    /* Enable the "Add comment" button when something is entered into the
+       textarea */
     $('#commentary-new-comment .commentary-comment-body textarea')
         .on('change keyup paste',
             function() {
@@ -294,6 +296,7 @@ function doComments($parent, comments) {
             }
         );
 
+    /* Initially disable the "Add comment" button */
     $('#commentary-new-comment .commentary-comment-actions-submit')
         .prop('disabled', true);
 }
