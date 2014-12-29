@@ -151,6 +151,11 @@ function start() {
     }
 }
 
+function adjustIframe() {
+    if (window.parent.__commentaryIframeResize)
+        window.parent.__commentaryIframeResize();    
+}
+
 function contentURL() {
     return (cfg.display_mode == 'iframe' ? window.parent : window)
         .location.pathname;
@@ -195,8 +200,7 @@ function doComments($parent, comments) {
             user: cfg.user
         }));
 
-    if (window.parent.__commentaryIframeResize)
-        window.parent.__commentaryIframeResize();
+    adjustIframe();
 
     if (cfg.display_mode == 'iframe') {
         /* Authentication links don't like to be called from an iframe */
@@ -215,8 +219,7 @@ function doComments($parent, comments) {
                 theme: cfg.recaptcha.theme || 'clean',
                 callback: function () {
                     /* If in an iframe, adjust size after reCAPTCHA is loaded */
-                    if (window.parent.__commentaryIframeResize)
-                        window.parent.__commentaryIframeResize();
+                    adjustIframe();
                 }
             }
         );
@@ -270,8 +273,7 @@ function doComments($parent, comments) {
                 $('#commentary-new-comment .commentary-comment-actions-submit')
                     .prop('disabled', true);
 
-                if (window.parent.__commentaryIframeResize)
-                    window.parent.__commentaryIframeResize();
+                adjustIframe();
             },
             'json'
         )
@@ -314,8 +316,7 @@ function quickShow(element) {
         {
             duration: 'fast',
             progress: function () {
-                if (window.parent.__commentaryIframeResize)
-                    window.parent.__commentaryIframeResize();
+                    adjustIframe();
             },
             complete: function () {
                 $(document).one('keydown mousemove', function () {
@@ -331,12 +332,10 @@ function quickShow(element) {
                             {
                                 duration: 'fast',
                                 progress: function () {
-                                    if (window.parent.__commentaryIframeResize)
-                                        window.parent.__commentaryIframeResize();
+                                    adjustIframe();
                                 },
                                 complete: function () {
-                                    if (window.parent.__commentaryIframeResize)
-                                        window.parent.__commentaryIframeResize();                                    
+                                    adjustIframe();
                                 }
                             }
                         );
