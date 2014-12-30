@@ -65,9 +65,6 @@ if (cfg.recaptcha)
 for (var i = 0; i < prerequisites.length; i++) {
     getScript(prerequisites[i].url,
         (function (data) {
-            if (this.success)
-                this.success(data);
-
             for (var i = 0; i < prerequisites.length; i++) {
                 if (!prerequisites[i].check())
                     return;
