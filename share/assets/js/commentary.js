@@ -62,7 +62,7 @@ if (cfg.recaptcha)
     });
 
 /* Load all prerequisites */
-for (var i = 0; i < prerequisites.length; i++) {
+for (var i = 0; i < prerequisites.length; i++)
     getScript(prerequisites[i].url,
         (function (data) {
             for (var i = 0; i < prerequisites.length; i++) {
@@ -74,7 +74,6 @@ for (var i = 0; i < prerequisites.length; i++) {
             start();
         }).bind(prerequisites[i])
     );
-}
 
 function tpl(name, data) {
     var $elem;
