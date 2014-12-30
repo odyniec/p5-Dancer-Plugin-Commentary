@@ -246,8 +246,9 @@ function doComments($parent, comments) {
                     })).hide().fadeIn('fast')
                 );
 
-                $('.commentary-message').removeClass('commentary-message-error');
-                $('.commentary-message').addClass('commentary-message-info');
+                $('.commentary-message')
+                    .removeClass('commentary-message-error')
+                    .addClass('commentary-message-info');
                 $('.commentary-message').html(
                     '<span class="fa fa-check-circle" /> New comment posted!'
                 );
@@ -275,8 +276,9 @@ function doComments($parent, comments) {
         )
         .fail(function (xhr) {
             var errors = xhr.responseJSON;
-            $('.commentary-message').removeClass('commentary-message-info');
-            $('.commentary-message').addClass('commentary-message-error');
+            $('.commentary-message')
+                .removeClass('commentary-message-info')
+                .addClass('commentary-message-error');
             $('.commentary-message').html(
                 '<span class="fa fa-exclamation-circle" /> ' + errors[0]['msg']
             );
